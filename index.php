@@ -5,37 +5,37 @@ $projects = ["Входящие", "Учеба", "Работа", "Домашние
 $tasks = 
     [
         [
-            'task' => 'Собеседование в IT компании',
+            'name' => 'Собеседование в IT компании',
             'date' => '01.12.2019',
             'category' => 'Работа',
             'isDone' => false
         ],
         [
-            'task' => 'Выполнить тестовое задание',
+            'name' => 'Выполнить тестовое задание',
             'date' => '25.12.2019',
             'category' => 'Работа',
             'isDone' => false
         ],
         [
-            'task' => 'Сделать задание первого раздела',
+            'name' => 'Сделать задание первого раздела',
             'date' => '21.12.2019',
             'category' => 'Учеба',
             'isDone' => true
         ],
         [
-            'task' => 'Встреча с другом',
+            'name' => 'Встреча с другом',
             'date' => '22.12.2019',
             'category' => 'Входящие',
             'isDone' => false
         ],
         [
-            'task' => 'Купить корм для кота',
+            'name' => 'Купить корм для кота',
             'date' => null,
             'category' => 'Домашние дела',
             'isDone' => false
         ],
         [
-            'task' => 'Заказать пиццу',
+            'name' => 'Заказать пиццу',
             'date' => null,
             'category' => 'Домашние дела',
             'isDone' => false
@@ -82,9 +82,9 @@ $tasks =
 
                 <nav class="main-navigation">
                     <ul class="main-navigation__list">
-                        <?php foreach($projects as $value) : ?>
+                        <?php foreach($projects as $project) : ?>
                         <li class="main-navigation__list-item">
-                            <a class="main-navigation__list-item-link" href="#"><?=$value; ?></a>
+                            <a class="main-navigation__list-item-link" href="#"><?=$project; ?></a>
                             <span class="main-navigation__list-item-count">0</span>
                         </li>
                         <?php endforeach; ?>
@@ -120,18 +120,18 @@ $tasks =
                 </div>
 
                 <table class="tasks">
-                    <?php foreach($tasks as $key => $val) :
-                        if ($show_complete_tasks === 0 && $val['isDone'] === true) : 
+                    <?php foreach($tasks as $task) :
+                        if ($show_complete_tasks === 0 && $task['isDone']) : 
                             continue;
                         endif; ?>
-                        <tr class="tasks__item task <?php if ($val['isDone'] === true) : ?>task--completed<?php endif; ?>">
+                        <tr class="tasks__item task <?php if ($task['isDone']) : ?>task--completed<?php endif; ?>">
                         <td class="task__select">
                             <label class="checkbox task__checkbox">
                                 <input class="checkbox__input visually-hidden task__checkbox" type="checkbox" value="1">
-                                <span class="checkbox__text "><?= $val['task']; ?></span>
+                                <span class="checkbox__text "><?= $task['name']; ?></span>
                             </label>
                         </td>
-                        <td class="task__date"><?= $val['date']; ?></td>
+                        <td class="task__date"><?= $task['date']; ?></td>
                     </tr>
                     <?php endforeach; ?>
                 </table>
