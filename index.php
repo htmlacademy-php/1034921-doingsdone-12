@@ -42,21 +42,15 @@ $tasks =
         ]
     ];
 
-    function countTasks(array $tasks, $projectName) {
+    function countTasks(array $tasks, string $projectName) {
         $result = 0;
-        $sum = 0;
-        if (is_array($tasks)) {
-            foreach ($tasks  as $task) {
-                if ($task['category'] == $projectName) {
-                    $sum++;
+            foreach ($tasks as $task) {
+                if ($task['category'] === $projectName) {
+                    $result++;
                 }
             }
-        }
-        $result = $sum;
         return $result;
     }
-
-
 ?>
 <!DOCTYPE html>
 <html lang="ru">
