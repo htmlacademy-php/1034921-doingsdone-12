@@ -47,7 +47,7 @@
             endif; ?>
             <!-- отображение строки с классом task--completed при условии исполнения задания -->
             <!-- отображение строки с классом task--important при условии что дата не null и менее 24 часов до задания -->
-            <tr class="tasks__item task <?php if ($task['isDone']): ?>task--completed<?php endif; ?><?php if ((is_string($task['date'])) && (checkHours(24, $task['date']))): ?> task--important<?php endif; ?>">
+            <tr class="tasks__item task <?php if ($task['isDone']): ?>task--completed<?php endif; ?><?php if ((is_string($task['date'])) && (checkHours($hoursBeforeTask, $task['date']))): ?> task--important<?php endif; ?>">
                 <td class="task__select">
                     <label class="checkbox task__checkbox">
                         <input class="checkbox__input visually-hidden task__checkbox" type="checkbox" value="1">
