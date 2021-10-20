@@ -8,7 +8,8 @@ $content = include_template('main.php',
     [
         'projects' => $projects,
         'tasks' => $tasks,
-        'show_complete_tasks' => rand(0,1)
+        'show_complete_tasks' => rand(0,1),
+        'hoursBeforeTask' => 24
     ]
 );
 
