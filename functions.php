@@ -20,6 +20,6 @@ function checkHours(int $hours, string $date): bool
     $now = time();
     $taskDate = strtotime($date);
     $diff = floor($taskDate - $now);
-    return ($diff > 0) && (($diff / hourEpoch) <= $hours);
+    return ($diff > 0) && (($diff / HOUR_SECONDS) <= $hours);
 }
 
