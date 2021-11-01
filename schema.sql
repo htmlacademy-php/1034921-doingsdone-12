@@ -1,28 +1,26 @@
 CREATE DATABASE doingsdone DEFAULT CHARACTER SET UTF8 DEFAULT COLLATE UTF8_GENERAL_CI;
 USE doingsdone;
-CREATE TABLE users(
+CREATE TABLE user(
 	id INT AUTO_INCREMENT PRIMARY KEY,
 	registration TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	email VARCHAR(128) NOT NULL UNIQUE,
 	name CHAR(255) NOT NULL,
 	password CHAR(64)
 );
-CREATE UNIQUE INDEX email ON users(email);
-CREATE INDEX name ON users(name);
-CREATE TABLE projects (
+CREATE INDEX email_idx ON user(email);
+CREATE TABLE project(
 	id INT AUTO_INCREMENT PRIMARY KEY,
 	name CHAR(255) NOT NULL,
-	FOREIGN KEY (id) REFERENCES users(id)
+	FOREIGN KEY (id) REFERENCES user(id)
 );
-CREATE INDEX name ON projects(name);
-CREATE TABLE tasks(
+CREATE INDEX name ON project(name);
+CREATE TABLE task(
 	id INT AUTO_INCREMENT PRIMARY KEY,
 	create_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	state TINYINT(1) NOT NULL,
 	name CHAR(255) NOT NULL,
-	file BLOB,
+	file_name VARCHAR(256),
 	expiration DATE,
-	FOREIGN KEY (id) REFERENCES users(id),
-	FOREIGN KEY (id) REFERENCES projects(id)
+	FOREIGN KEY (id) REFERENCES project(id)
 );
-CREATE INDEX expiration ON tasks(expiration);
+CREATE INDEX expiration ON task(expiration);
