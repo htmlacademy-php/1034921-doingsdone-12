@@ -10,17 +10,19 @@ CREATE TABLE user(
 CREATE INDEX email_idx ON user(email);
 CREATE TABLE project(
 	id INT AUTO_INCREMENT PRIMARY KEY,
+	user_id INT, 
 	name CHAR(255) NOT NULL,
-	FOREIGN KEY (id) REFERENCES user(id)
+	FOREIGN KEY (user_id) REFERENCES user(id)
 );
 CREATE INDEX name ON project(name);
 CREATE TABLE task(
 	id INT AUTO_INCREMENT PRIMARY KEY,
+	project_id INT,
 	create_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	state TINYINT(1) NOT NULL,
 	name CHAR(255) NOT NULL,
 	file_name VARCHAR(256),
 	expiration DATE,
-	FOREIGN KEY (id) REFERENCES project(id)
+	FOREIGN KEY (project_id) REFERENCES project(id)
 );
 CREATE INDEX expiration ON task(expiration);
