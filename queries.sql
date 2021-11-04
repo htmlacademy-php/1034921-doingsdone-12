@@ -1,20 +1,20 @@
-INSERT INTO user (id, registration, email, name, password) VALUES
-(1, '2021-11-03 10:22:17', 'a@abc.ru', 'Азамат', '123456'),
-(2, '2021-11-03 10:22:17', 'b@abc.ru', 'Нурсултан', '123456'),
-(3, '2021-11-03 10:22:17', 'c@abc.ru', 'Владимир', '123456');
-INSERT INTO project (id, user_id, name) VALUES
-(1, 1, 'Входящие'),
-(2, 2, 'Учеба'),
-(3, 3, 'Работа'),
-(4, 2, 'Домашние дела'),
-(5, 1, 'Авто');
-INSERT INTO task (id, project_id, create_date, state, name, file_name, expiration) VALUES
-(1, 3, '2021-11-03 10:22:17', 0, 'Собеседование в IT компании', NULL, '2021-11-05'),
-(2, 3, '2021-11-03 10:22:17', 0, 'Выполнить тестовое задание', NULL, '2021-11-05'),
-(3, 2, '2021-11-03 10:22:17', 0, 'Сделать задание первого раздела', NULL, '2021-11-05'),
-(4, 1, '2021-11-03 10:22:17', 0, 'Встреча с другом', NULL, '2021-11-04'),
-(5, 4, '2021-11-03 10:22:17', 0, 'Купить корм для кота', NULL, '2021-11-04'),
-(6, 4, '2021-11-03 10:22:17', 0, 'Заказать пиццу', NULL, '2021-11-03');
+INSERT INTO user (registration, email, name, password) VALUES
+(CURRENT_TIMESTAMP, 'a@abc.ru', 'Азамат', '123456'),
+(CURRENT_TIMESTAMP, 'b@abc.ru', 'Нурсултан', '123456'),
+(CURRENT_TIMESTAMP, 'c@abc.ru', 'Владимир', '123456');
+INSERT INTO project (user_id, name) VALUES
+(1, 'Входящие'),
+(2, 'Учеба'),
+(3, 'Работа'),
+(2, 'Домашние дела'),
+(1, 'Авто');
+INSERT INTO task (project_id, create_date, state, name, file_name, expiration) VALUES
+(3, CURRENT_TIMESTAMP, 0, 'Собеседование в IT компании', NULL, '2021-11-05'),
+(3, CURRENT_TIMESTAMP, 0, 'Выполнить тестовое задание', NULL, '2021-11-05'),
+(2, CURRENT_TIMESTAMP, 0, 'Сделать задание первого раздела', NULL, '2021-11-05'),
+(1, CURRENT_TIMESTAMP, 0, 'Встреча с другом', NULL, '2021-11-04'),
+(4, CURRENT_TIMESTAMP, 0, 'Купить корм для кота', NULL, '2021-11-04'),
+(4, CURRENT_TIMESTAMP, 0, 'Заказать пиццу', NULL, '2021-11-03');
 -- получить список из всех проектов для одного пользователя
 SELECT p.name, u.name FROM project AS p INNER JOIN user AS u ON p.user_id = u.id;
 -- получить список из всех задач для одного проекта
