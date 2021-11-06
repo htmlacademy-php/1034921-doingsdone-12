@@ -19,9 +19,9 @@ CREATE TABLE task(
 	id INT AUTO_INCREMENT PRIMARY KEY,
 	project_id INT,
 	create_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	state TINYINT(1) NOT NULL,
+	state TINYINT(1) NOT NULL DEFAULT 0,
 	name CHAR(255) NOT NULL,
-	file_name VARCHAR(256),
+	file_name VARCHAR(256) DEFAULT NULL,
 	expiration DATE,
 	FOREIGN KEY (project_id) REFERENCES project(id)
 );
