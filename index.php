@@ -13,8 +13,8 @@ $projects = getProjectsByUser($connect, $userId);
 $tasksAll = getTasksByUser($connect, $userId);
 $urlProjectId = filter_input(INPUT_GET, 'project_id', FILTER_SANITIZE_NUMBER_INT);
 
-
 if (isset($urlProjectId)) {
+    $projects = buildMenu($projects, $urlProjectId);
     $tasks = getTasksByProjectId($connect, $urlProjectId);
 } else {
     $tasks = getTasksByUser($connect, $userId);

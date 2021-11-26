@@ -53,8 +53,10 @@ function getTasksByProjectId(object $connect, int $projectId): array
     return mysqli_fetch_all($resultSql, MYSQLI_ASSOC);
 }
 
-function isMenuActive(string $projectId): bool
+function buildMenu(array $projects, int $requestedProjectId): array
 {
-    $urlProjectId = $_GET['project_id'];
-    return $projectId == $urlProjectId;
+    foreach ($projects as $key => $project) {
+        $projects[$key]['selected'] = $requestedProjectId === $project['id'];
+    }
+    return $projects;
 }
