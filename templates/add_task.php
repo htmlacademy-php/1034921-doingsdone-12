@@ -66,9 +66,10 @@
 
             <select class="form__input form__input--select" name="project_id" id="project">
               <?php foreach ($projects as $project): ?>
-                <option value="<?php if (checkProjectId($project['id'], $allowedPojects)): ?><?= htmlspecialchars($project['id']); endif; ?>">
+                  <option value="<?= htmlspecialchars($project['id']) ?>"
+                    <?php if (isset($_POST['project_id']) && ($project['id'] === intval($_POST['project_id']))): ?>selected <?php endif; ?>>
                     <?= htmlspecialchars($project['name']); ?>
-                </option>
+                  </option>
               <?php endforeach; ?>
             </select>
           </div>

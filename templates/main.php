@@ -47,14 +47,14 @@
             endif; ?>
             <!-- отображение строки с классом task--completed при условии исполнения задания -->
             <!-- отображение строки с классом task--important при условии что дата не null и менее 24 часов до задания -->
-            <tr class="tasks__item task <?php if ($task['isDone']): ?>task--completed<?php endif; ?><?php if ((is_string($task['date'])) && (checkHours($hoursBeforeTask, $task['date']))): ?> task--important<?php endif; ?>">
+            <tr class="tasks__item task <?php if ($task['isDone']): ?>task--completed<?php endif; ?><?php var_dump(checkHours($hoursBeforeTask, $task['date'])); if ((is_string($task['date'])) && (checkHours($hoursBeforeTask, $task['date']))): ?> task--important<?php endif; ?>">
                 <td class="task__select">
                     <label class="checkbox task__checkbox">
                         <input class="checkbox__input visually-hidden task__checkbox" type="checkbox" value="1">
                         <span class="checkbox__text "><?= htmlspecialchars($task['name']); ?></span>
                     </label>
                 </td>
-                <td><a href="<?= htmlspecialchars($task['file_name']); ?>"><?= htmlspecialchars($task['file_name']); ?></a></td>
+                <td><a href="/uploads/<?= htmlspecialchars($task['file_name']); ?>"><?= htmlspecialchars($task['file_name']); ?></a></td>
                 <td class="task__date"><?= htmlspecialchars($task['date']); ?></td>
             </tr>
         <?php endforeach; ?>

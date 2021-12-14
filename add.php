@@ -2,6 +2,7 @@
 
 require_once 'functions.php';
 require_once 'helpers.php';
+require_once 'data.php';
 
 $connect = mysqli_connect('localhost', 'root', '', 'doingsdone');
 mysqli_set_charset($connect, 'utf8');
@@ -13,11 +14,29 @@ $allowedPojects = array_column($projects, 'id');
 $tasksAll = getTasksByUser($connect, $userId);
 $tasks = getTasksByUser($connect, $userId);
 
-// определяем пустой массив, который будем заполнять ошибками валидации
+// определяем пустой массив, который будем заполнять ошибками валидации для передачи в шаблон
 $errors = [];
-
-// если кнопка нажата необходимо проверить поля на заполнение и валидацию
+// Вначале убедимся, что форма была отправлена.
+// Для этого проверяем метод, которым была запрошена страница.
+// Если метод POST - значит этот сценарий был вызван отправкой формы
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+    // Получим в массив поля из формы. Если какого то поля не будет в форме, то в массиве его значением будет NULL
+    $newTask = filter_input_array(INPUT_POST,
+        [
+            'name' => FILTER_DEFAULT,
+            'project_id' => FILTER_DEFAULT,
+            'date' => FILTER_DEFAULT,
+            'file' => FILTER_DEFAULT
+        ],
+        true);
+
+    // описание ошибок
+    $taskError = [
+        'name' => 'Поле наименование задачи надо заполнить',
+        'date' => 'Дата должна быть больше или равна текущей в формате ГГГГ-ММ-ДД',
+    ];
+
     // обязательные поля для заполнения
     $requiredFields = ['name', 'project_id', 'date'];
 
@@ -34,33 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     ];
 
-    // Получим в массив поля из формы. Если какого то поля не будет в форме, то в массиве его значением будет NULL
-    $newTask = filter_input_array(INPUT_POST,
-        [
-            'name' => FILTER_DEFAULT,
-            'project_id' => FILTER_DEFAULT,
-            'date' => FILTER_DEFAULT,
-            'file' => FILTER_DEFAULT
-        ],
-        true);
-
-    // доабавлеям файл
-    if (!empty($_FILES['file'])) {
-        $fileName = $_FILES['file']['name'];
-        $filePath = __DIR__ . '/uploads/';
-        $fileUrl = '/uploads/' . $fileName;
-        move_uploaded_file($_FILES['file']['tmp_name'], $filePath . $fileName);
-        // присвоим наименование файла новой задаче для передачи параметра функии addNewTask
-        $newTask['file'] = $fileUrl;
-    }
-
-    // описание ошибок
-    $taskError = [
-        'name' => 'Поле  наименование задачи надо заполнить',
-        'date' => 'Дата должна быть больше или равна текущей в формате ГГГГ-ММ-ДД',
-        'file' => 'Вы не загрузили файл'
-    ];
-
     // Применяем функции валидации ко всем полям формы.
     // Результат работы функций записывается в массив ошибок $errors.
     // Данный массив мы в итоге отфильтровываем,
@@ -74,14 +66,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (in_array($key, $requiredFields) && empty($value)) {
             $errors[$key] = $taskError[$key];
         }
-        if (($key == 'date' && !isDateCorrect($value))) {
+        if (($key === 'date' && !isDateCorrect($value))) {
             $errors[$key] = $taskError[$key];
         }
     }
     $errors = array_filter($errors);
 
+    // добавляем файл
+    if (!empty($_FILES['file']) && (count($errors) === 0)) {
+        $file = $_FILES['file'];
+        $fileName = $file['name'];
+        if ($file['error'] == 0) {
+            $filePath = __DIR__ . '/uploads/';
+            //$fileUrl = '/uploads/' . $fileName;
+            $tmpFile = $_FILES['file']['tmp_name'];
 
+            $fileMaxSize = 1024000;
+            $fileInfo = finfo_open(FILEINFO_MIME_TYPE);
+            $fileType = finfo_file($fileInfo, $tmpFile);
+            $isFileAllow = in_array($fileType, ["application/pdf", "application/msword"]);
 
+            if (!$isFileAllow) {
+                $errors['file'] = 'Загрузите документ в формате PDF или Word';
+            } elseif ($file['size'] >= $fileMaxSize) {
+                $errors['file'] = 'Загрузите документ не более 1 Мб ';
+            } else {
+                move_uploaded_file($tmpFile, $filePath . $fileName);
+                $newTask['file'] = $fileName;
+            }
+        }
+        else {
+            $errors['file'] = 'Загрузите файл';
+        }
+    }
     // проверяем на наличие ошибок, если ошибок нет, то добоавляем задачу
     if (count($errors) === 0) {
         // добавление задачи в БД
@@ -90,6 +107,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         header("Location: index.php");
     }
 }
+
+
 
 $pageContent = include_template('add_task.php',
     [
