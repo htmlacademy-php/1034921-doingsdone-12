@@ -75,30 +75,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // добавляем файл
     if (!empty($_FILES['file']) && (count($errors) === 0)) {
         $file = $_FILES['file'];
-        $fileName = $file['name'];
         if ($file['error'] == 0) {
-            $filePath = __DIR__ . '/uploads/';
-            //$fileUrl = '/uploads/' . $fileName;
-            $tmpFile = $_FILES['file']['tmp_name'];
-
-            $fileMaxSize = 1024000;
-            $fileInfo = finfo_open(FILEINFO_MIME_TYPE);
-            $fileType = finfo_file($fileInfo, $tmpFile);
-            $isFileAllow = in_array($fileType, ["application/pdf", "application/msword"]);
-
-            if (!$isFileAllow) {
-                $errors['file'] = 'Загрузите документ в формате PDF или Word';
-            } elseif ($file['size'] >= $fileMaxSize) {
-                $errors['file'] = 'Загрузите документ не более 1 Мб ';
-            } else {
-                move_uploaded_file($tmpFile, $filePath . $fileName);
-                $newTask['file'] = $fileName;
+            // валидируем файл
+            if (validateFile($file)) {
+                // возвращаем наименование файла для добавления в БД
+                $newTask['file'] = $file['name'];
+            }
+            else {
+                $errors['file'] = 'Загрузите документ не более 1 Мб в формате PDF или Word';
             }
         }
         else {
             $errors['file'] = 'Загрузите файл';
         }
     }
+
     // проверяем на наличие ошибок, если ошибок нет, то добоавляем задачу
     if (count($errors) === 0) {
         // добавление задачи в БД

@@ -111,10 +111,15 @@ function addNewTask(object $connect, array $task): void
     mysqli_stmt_execute($stmt);
 }
 
-// для работы
-function printArr(array $arr)
+// валидация вложенного файла
+function validateFile(array $file): bool
 {
-    echo '<pre>';
-    print_r($arr);
-    echo '</pre>';
+    $fileName = $file['name'];
+    $filePath = __DIR__ . '/uploads/';
+    $tmpFile = $file['tmp_name'];
+    $fileMaxSize = 1024000;
+    $fileInfo = finfo_open(FILEINFO_MIME_TYPE);
+    $fileType = finfo_file($fileInfo, $tmpFile);
+    $isFileAllow = in_array($fileType, ["application/pdf", "application/msword"]);
+    return $isFileAllow && $file['size'] <= $fileMaxSize ? move_uploaded_file($tmpFile, $filePath . $fileName) : false;
 }
