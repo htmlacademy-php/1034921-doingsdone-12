@@ -7,7 +7,7 @@ require_once 'helpers.php';
 $connect = mysqli_connect('localhost', 'root', '', 'doingsdone');
 mysqli_set_charset($connect, 'utf8');
 
-$userId = 2;
+$userId = 1;
 
 $projects = getProjectsByUser($connect, $userId);
 $tasksAll = getTasksByUser($connect, $userId);
