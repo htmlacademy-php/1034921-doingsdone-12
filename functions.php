@@ -123,3 +123,65 @@ function validateFile(array $file): bool
     $isFileAllow = in_array($fileType, ["application/pdf", "application/msword"]);
     return $isFileAllow && $file['size'] <= $fileMaxSize ? move_uploaded_file($tmpFile, $filePath . $fileName) : false;
 }
+
+// валидация email
+function validateEmail(string $email): ?string
+{
+    if (!filter_var($_POST[$email], FILTER_VALIDATE_EMAIL)) {
+        return "E-mail введён некорректно";
+    }
+    return null;
+}
+
+// валидация пароля
+function validatePass(string $field): ?string
+{
+    $lengthRequire = 6;
+    $isAllowLength = strlen($_POST[$field]) >= $lengthRequire;
+    $pattern = '/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/';
+    $isAllowPattern = preg_match($pattern, $_POST[$field], $matches);
+    if (!$isAllowLength) {
+        return "Пароль должен быть не менее $lengthRequire символов";
+    }
+    if (!$isAllowPattern) {
+        return "Пароль должен быть не менее $lengthRequire символов: a-z, A-Z, 0-9";
+    }
+    return null;
+}
+
+// проверка пользователя в БД
+function isUserExist(object $connect, string $userEmail): bool
+{
+    $query = "SELECT id FROM user WHERE email = ?";
+    $stmt = mysqli_prepare($connect, $query);
+    mysqli_stmt_bind_param($stmt, 's', $userEmail);
+    mysqli_stmt_execute($stmt);
+    $resultSql = mysqli_stmt_get_result($stmt);
+    return mysqli_fetch_assoc($resultSql) ? true : false;
+}
+
+// добавление пользователя в БД
+function userInsert(object $connect, array $form): void
+{
+    $password = password_hash($form['password'], PASSWORD_DEFAULT);
+    $query = "INSERT INTO user (registration, email, name, password) VALUES (NOW(), ?, ?, ?)";
+    $stmt = db_get_prepare_stmt($connect, $query,
+        [
+            $form['email'],
+            $form['name'],
+            $password
+        ]);
+    mysqli_stmt_execute($stmt);
+}
+
+// сохранение значения value в форме
+function getFormValue(string $value): ?string
+{
+    if (is_null(getPostVal())) {
+        return $value;
+    }
+    else {
+        return getPostVal($value);
+    }
+    return null;
+}
