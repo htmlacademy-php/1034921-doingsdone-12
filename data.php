@@ -1,5 +1,6 @@
 <?php
 const HOUR_SECONDS = 3600; // для расчета часов при использовании timestamp
+const MIN_PASS_LENGTH = 6;
 $show_complete_tasks = rand(0, 1);
 $projects = ["Входящие", "Учеба", "Работа", "Домашние дела", "Авто"];
 $tasks =

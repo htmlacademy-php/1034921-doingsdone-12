@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Применение функций проверки ко всем значениям
     $rules = [
         'name' => function() {
-            validateFilled('name');
+            return validateFilled($_POST['name']);
         },
         'project_id' => function($value) use ($allowedPojects) {
             return validateProject($value, $allowedPojects);

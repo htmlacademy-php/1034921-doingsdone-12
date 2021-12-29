@@ -70,7 +70,7 @@ function getPostVal(string $field): ?string
 // валидация заполненности поля Наименование задачи
 function validateFilled(string $field): ?string
 {
-    if (empty($_POST[$field])) {
+    if (empty($field)) {
         return 'Это поле должно быть заполнено';
     }
     return null;
@@ -127,24 +127,23 @@ function validateFile(array $file): bool
 // валидация email
 function validateEmail(string $email): ?string
 {
-    if (!filter_var($_POST[$email], FILTER_VALIDATE_EMAIL)) {
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         return "E-mail введён некорректно";
     }
     return null;
 }
 
 // валидация пароля
-function validatePass(string $field): ?string
+function validatePass(string $pass): ?string
 {
-    $lengthRequire = 6;
-    $isAllowLength = strlen($_POST[$field]) >= $lengthRequire;
-    $pattern = '/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/';
-    $isAllowPattern = preg_match($pattern, $_POST[$field], $matches);
-    if (!$isAllowLength) {
-        return "Пароль должен быть не менее $lengthRequire символов";
+    if (strlen($pass) < MIN_PASS_LENGTH) {
+        $msgLength = 'Пароль должен быть не менее %s символов';
+        return sprintf($msgLength, MIN_PASS_LENGTH);
     }
-    if (!$isAllowPattern) {
-        return "Пароль должен быть не менее $lengthRequire символов: a-z, A-Z, 0-9";
+    preg_match('/(?=.*[a-z])(?=.*[A-Z]).*/', $pass, $matches);
+    if (count($matches) === 0) {
+        $msgPattern = 'Пароль должен быть не менее %s символов: a-z, A-Z, 0-9';
+        return sprintf($msgPattern, MIN_PASS_LENGTH);
     }
     return null;
 }
@@ -172,16 +171,4 @@ function userInsert(object $connect, array $form): void
             $password
         ]);
     mysqli_stmt_execute($stmt);
-}
-
-// сохранение значения value в форме
-function getFormValue(string $value): ?string
-{
-    if (is_null(getPostVal())) {
-        return $value;
-    }
-    else {
-        return getPostVal($value);
-    }
-    return null;
 }

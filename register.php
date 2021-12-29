@@ -29,13 +29,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $rules = [
         'email' => function() {
-            return validateEmail('email');
+            return validateEmail($_POST['email']);
         },
         'password' => function() {
-            return validatePass('password');
+            return validatePass($_POST['password']);
         },
         'name' => function() {
-            return validateFilled('name');
+            return validateFilled($_POST['name']);
         }
     ];
 
