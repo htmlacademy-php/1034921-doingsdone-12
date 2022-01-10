@@ -70,7 +70,7 @@ function getPostVal(string $field): ?string
 // валидация заполненности поля Наименование задачи
 function validateFilled(string $field): ?string
 {
-    if (empty($_POST[$field])) {
+    if (empty($field)) {
         return 'Это поле должно быть заполнено';
     }
     return null;
@@ -122,4 +122,53 @@ function validateFile(array $file): bool
     $fileType = finfo_file($fileInfo, $tmpFile);
     $isFileAllow = in_array($fileType, ["application/pdf", "application/msword"]);
     return $isFileAllow && $file['size'] <= $fileMaxSize ? move_uploaded_file($tmpFile, $filePath . $fileName) : false;
+}
+
+// валидация email
+function validateEmail(string $email): ?string
+{
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return "E-mail введён некорректно";
+    }
+    return null;
+}
+
+// валидация пароля
+function validatePass(string $pass): ?string
+{
+    if (strlen($pass) < MIN_PASS_LENGTH) {
+        $msgLength = 'Пароль должен быть не менее %s символов';
+        return sprintf($msgLength, MIN_PASS_LENGTH);
+    }
+    preg_match('/(?=.*[a-z])(?=.*[A-Z]).*/', $pass, $matches);
+    if (count($matches) === 0) {
+        $msgPattern = 'Пароль должен быть не менее %s символов: a-z, A-Z, 0-9';
+        return sprintf($msgPattern, MIN_PASS_LENGTH);
+    }
+    return null;
+}
+
+// проверка пользователя в БД
+function isUserExist(object $connect, string $userEmail): bool
+{
+    $query = "SELECT id FROM user WHERE email = ?";
+    $stmt = mysqli_prepare($connect, $query);
+    mysqli_stmt_bind_param($stmt, 's', $userEmail);
+    mysqli_stmt_execute($stmt);
+    $resultSql = mysqli_stmt_get_result($stmt);
+    return mysqli_fetch_assoc($resultSql) ? true : false;
+}
+
+// добавление пользователя в БД
+function userInsert(object $connect, array $form): void
+{
+    $password = password_hash($form['password'], PASSWORD_DEFAULT);
+    $query = "INSERT INTO user (registration, email, name, password) VALUES (NOW(), ?, ?, ?)";
+    $stmt = db_get_prepare_stmt($connect, $query,
+        [
+            $form['email'],
+            $form['name'],
+            $password
+        ]);
+    mysqli_stmt_execute($stmt);
 }

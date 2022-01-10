@@ -19,7 +19,7 @@ $errors = [];
 // Вначале убедимся, что форма была отправлена.
 // Для этого проверяем метод, которым была запрошена страница.
 // Если метод POST - значит этот сценарий был вызван отправкой формы
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Получим в массив поля из формы. Если какого то поля не будет в форме, то в массиве его значением будет NULL
     $newTask = filter_input_array(INPUT_POST,
@@ -43,13 +43,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Применение функций проверки ко всем значениям
     $rules = [
         'name' => function() {
-            validateFilled('name');
+            return  validateFilled($_POST['name']) ?? '';
         },
         'project_id' => function($value) use ($allowedPojects) {
-            return validateProject($value, $allowedPojects);
+            return validateProject($value, $allowedPojects) ?? '';
         },
         'date' => function() {
-            validateDate('date');
+            validateDate('date') ?? '';
         }
     ];
 
@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // добавляем файл
     if (!empty($_FILES['file']) && (count($errors) === 0)) {
         $file = $_FILES['file'];
-        if ($file['error'] == 0) {
+        if ($file['error'] === 0) {
             // валидируем файл
             if (validateFile($file)) {
                 // возвращаем наименование файла для добавления в БД

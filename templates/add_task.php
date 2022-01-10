@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Document</title>
+  <title>Добавление задачи</title>
   <link rel="stylesheet" href="../css/normalize.css">
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/flatpickr.min.css">
@@ -57,7 +57,7 @@
           <div class="form__row">
               <?php $classname = isset($errors['name']) ? "form__input--error" : ""; ?>
                 <label class="form__label" for="name">Название <sup>*</sup></label>
-                <input class="form__input" type="text" name="name" id="name" value="<?= htmlspecialchars(getPostVal('name')); ?>" placeholder="Введите название">
+                <input class="form__input <?= $classname; ?>" type="text" name="name" id="name" value="<?= htmlspecialchars(getPostVal('name')); ?>" placeholder="Введите название">
               <p class="form__message"><?= $errors['name'] ?? ""; ?></p>
           </div>
 
@@ -77,7 +77,7 @@
           <div class="form__row">
               <?php $classname = isset($errors['date']) ? "form__input--error" : ""; ?>
                 <label class="form__label" for="date">Дата выполнения</label>
-                <input class="form__input form__input--date" type="text" name="date" id="date" value="<?= htmlspecialchars(getPostVal('date')); ?>" placeholder="Введите дату в формате ГГГГ-ММ-ДД">
+                <input class="form__input form__input--date <?= $classname; ?>" type="text" name="date" id="date" value="<?= htmlspecialchars(getPostVal('date')); ?>" placeholder="Введите дату в формате ГГГГ-ММ-ДД">
               <p class="form__message"><?= $errors['date'] ?? ""; ?></p>
           </div>
 
