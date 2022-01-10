@@ -8,7 +8,7 @@ $connect = mysqli_connect('localhost', 'root', '', 'doingsdone');
 mysqli_set_charset($connect, 'utf8');
 
 $errors = [];
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $newUser = filter_input_array(INPUT_POST,
         [
@@ -29,13 +29,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $rules = [
         'email' => function() {
-            return validateEmail($_POST['email']);
+            return validateEmail($_POST['email']) ?? '';
         },
         'password' => function() {
-            return validatePass($_POST['password']);
+            return validatePass($_POST['password']) ?? '';
         },
         'name' => function() {
-            return validateFilled($_POST['name']);
+            return validateFilled($_POST['name']) ?? '';
         }
     ];
 
