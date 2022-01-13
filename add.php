@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 require_once 'functions.php';
 require_once 'helpers.php';
 require_once 'data.php';
@@ -7,8 +9,8 @@ require_once 'data.php';
 $connect = mysqli_connect('localhost', 'root', '', 'doingsdone');
 mysqli_set_charset($connect, 'utf8');
 
-$userId = 1;
-
+$user = getUserData($connect, $_SESSION['user']['email']);
+$userId = $user['id'];
 $projects = getProjectsByUser($connect, $userId);
 $allowedPojects = array_column($projects, 'id');
 $tasksAll = getTasksByUser($connect, $userId);

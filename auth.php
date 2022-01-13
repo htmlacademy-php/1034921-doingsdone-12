@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 
 require_once 'functions.php';
@@ -11,23 +10,23 @@ mysqli_set_charset($connect, 'utf8');
 
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $form = $_POST;
 
-    $newUser = filter_input_array(INPUT_POST,
+    $authUser = filter_input_array(INPUT_POST,
         [
             'email' => FILTER_DEFAULT,
             'password' => FILTER_DEFAULT,
-            'name' => FILTER_DEFAULT
         ],
         true);
 
     $errorDescription = [
         'email' => 'Укажите E-mail',
-        'isEmailExist' => 'Пользователь с этим E-mail уже зарегистрирован',
+        'isEmailNotExist' => 'Пользователь с этим E-mail не найден',
         'password' => 'Укажите пароль',
         'name' => 'Укажите имя'
     ];
 
-    $requiredFields = ['email', 'password', 'name'];
+    $requiredFields = ['email', 'password'];
 
     $rules = [
         'email' => function() {
@@ -35,13 +34,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         },
         'password' => function() {
             return validatePass($_POST['password']) ?? '';
-        },
-        'name' => function() {
-            return validateFilled($_POST['name']) ?? '';
         }
     ];
 
-    foreach ($newUser as $key => $value) {
+    foreach ($authUser as $key => $value) {
         if (isset($rules[$key])) {
             $rule = $rules[$key];
             $errors[$key] = $rule($value);
@@ -51,25 +47,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[$key] = $errorDescription[$key];
         }
         // проверка пользователя в БД
-        if (($key === 'email') && isUserExist($connect, $value)) {
-            $errors[$key] = $errorDescription['isEmailExist'];
+        if (($key === 'email') && !isUserExist($connect, $value) && !empty($value) ) {
+            $errors[$key] = $errorDescription['isEmailNotExist'];
         }
     }
-    // очищаем массив ошибок от значений NULL, иначе NULL тоже считается в массиве
+
     $errors = array_filter($errors);
 
-    // проверяем на наличие ошибок, если ошибок нет, то добавляем пользователя
-    if (count($errors) === 0) {
-        userInsert($connect, $newUser);
-        // передаем сессии email для последующей обработки в index, без этого index не откроется
-        $_SESSION['user']['email'] = $newUser['email'];
-        header("Location: /index.php");
-        exit();
+    if (!count($errors) and isUserExist($connect, $form['email'])) {
+        $user = getUserData($connect, $form['email']);
+        var_dump($user);
+        var_dump($form);
+        var_dump(password_verify($form['password'], $user['password']));
+        if (password_verify($form['password'], $user['password'])) {
+            $_SESSION['user'] = $user;
+            header("Location: /index.php");
+        }
     }
 
 }
 
-$pageContent = include_template('register.php',
+$pageContent = include_template('auth.php',
     [
         'errors' => $errors
     ]

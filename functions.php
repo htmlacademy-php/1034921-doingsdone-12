@@ -172,3 +172,15 @@ function userInsert(object $connect, array $form): void
         ]);
     mysqli_stmt_execute($stmt);
 }
+
+// возвращает все поля пользователя
+function getUserData(object $connect, string $userEmail): array
+{
+    $query = "SELECT * FROM user WHERE email = ?";
+    $stmt = mysqli_prepare($connect, $query);
+    mysqli_stmt_bind_param($stmt, 's', $userEmail);
+    mysqli_stmt_execute($stmt);
+    $resultSql = mysqli_stmt_get_result($stmt);
+    return mysqli_fetch_assoc($resultSql);
+    //return mysqli_fetch_all($resultSql, MYSQLI_ASSOC);
+}

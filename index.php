@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 require_once 'data.php';
 require_once 'functions.php';
 require_once 'helpers.php';
@@ -7,8 +9,8 @@ require_once 'helpers.php';
 $connect = mysqli_connect('localhost', 'root', '', 'doingsdone');
 mysqli_set_charset($connect, 'utf8');
 
-$userId = 1;
-
+$user = getUserData($connect, $_SESSION['user']['email']);
+$userId = $user['id'];
 $projects = getProjectsByUser($connect, $userId);
 $tasksAll = getTasksByUser($connect, $userId);
 $urlProjectId = filter_input(INPUT_GET, 'project_id', FILTER_SANITIZE_NUMBER_INT);
@@ -33,14 +35,15 @@ $content = include_template('main.php',
         'tasks' => $tasks,
         'show_complete_tasks' => rand(0,1),
         'hoursBeforeTask' => 24,
-        'connect' => $connect
+        'connect' => $connect,
     ]
 );
 
 $layoutContent = include_template('layout.php',
     [
         'content' => $content,
-        'title' => 'Дела в порядке'
+        'title' => 'Дела в порядке',
+        'user' => $user
     ]
 );
 

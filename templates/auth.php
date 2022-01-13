@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Регистрация</title>
+    <title>Авторизация</title>
     <link rel="stylesheet" href="../css/normalize.css">
     <link rel="stylesheet" href="../css/style.css">
 </head>
@@ -13,6 +13,7 @@
 
 <div class="page-wrapper">
     <div class="container container--with-sidebar">
+
         <header class="main-header">
             <a href="#">
                 <img src="../img/logo.png" width="153" height="42" alt="Логитип Дела в порядке">
@@ -24,6 +25,7 @@
         </header>
 
         <div class="content">
+
             <section class="content__side">
                 <p class="content__side-info">Если у вас уже есть аккаунт, авторизуйтесь на сайте</p>
 
@@ -31,14 +33,14 @@
             </section>
 
             <main class="content__main">
-                <h2 class="content__main-heading">Регистрация аккаунта</h2>
+                <h2 class="content__main-heading">Вход на сайт</h2>
 
-                <form class="form" action="register.php" method="post" autocomplete="off" enctype="multipart/form-data">
+                <form class="form" action="auth.php" method="post" autocomplete="off">
                     <div class="form__row">
                         <?php $classname = isset($errors['email']) ? "form__input--error" : ""; ?>
                         <label class="form__label" for="email">E-mail <sup>*</sup></label>
 
-                        <input class="form__input <?= $classname; ?>" type="text" name="email" id="email" value="<?php getPostVal('email'); ?>" placeholder="Введите e-mail">
+                        <input class="form__input form__input--error" type="text" name="email" id="email" value="" placeholder="Введите e-mail">
                         <p class="form__message"><?= $errors['email'] ?? "" ?></p>
                     </div>
 
@@ -46,28 +48,19 @@
                         <?php $classname = isset($errors['password']) ? "form__input--error" : ""; ?>
                         <label class="form__label" for="password">Пароль <sup>*</sup></label>
 
-                        <input class="form__input <?= $classname; ?>" type="password" name="password" id="password" value="<?= getPostVal('password'); ?>" placeholder="Введите пароль">
+                        <input class="form__input" type="password" name="password" id="password" value="" placeholder="Введите пароль">
                         <p class="form__message"><?= $errors['password'] ?? "" ?></p>
                     </div>
 
-                    <div class="form__row">
-                        <?php $classname = isset($errors['name']) ? "form__input--error" : ""; ?>
-                        <label class="form__label" for="name">Имя <sup>*</sup></label>
-
-                        <input class="form__input <?= $classname; ?>" type="text" name="name" id="name" value="<?= getPostVal('name'); ?>" placeholder="Введите имя">
-                        <p class="form__message"><?= $errors['name'] ?? "" ?></p>
-                    </div>
-
                     <div class="form__row form__row--controls">
-                        <?php if (count($errors)): ?>
-                            <p class="error-message">Пожалуйста, исправьте ошибки в форме</p>
-                        <?php endif; ?>
-
-                        <input class="button" type="submit" name="" value="Зарегистрироваться">
+                        <input class="button" type="submit" name="" value="Войти">
                     </div>
                 </form>
+
             </main>
+
         </div>
+
     </div>
 </div>
 
@@ -127,5 +120,6 @@
         </div>
     </div>
 </footer>
+
 </body>
 </html>
