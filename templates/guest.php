@@ -14,7 +14,7 @@
 <div class="page-wrapper">
     <div class="container">
         <header class="main-header">
-            <a href="#">
+            <a href="index.php">
                 <img src="../img/logo.png" width="153" height="42" alt="Логитип Дела в порядке">
             </a>
 

@@ -110,6 +110,7 @@ $pageContent = include_template('add_task.php',
         'tasks' => $tasks,
         'errors' => $errors,
         'allowedPojects' => $allowedPojects, // для проверки существования проекта
+        'user' => $user
     ]
 );
 

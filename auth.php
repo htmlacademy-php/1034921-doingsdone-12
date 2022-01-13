@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'email' => 'Укажите E-mail',
         'isEmailNotExist' => 'Пользователь с этим E-mail не найден',
         'password' => 'Укажите пароль',
-        'name' => 'Укажите имя'
+        'wrongPass' => 'Неверный пароль'
     ];
 
     $requiredFields = ['email', 'password'];
@@ -50,15 +50,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (($key === 'email') && !isUserExist($connect, $value) && !empty($value) ) {
             $errors[$key] = $errorDescription['isEmailNotExist'];
         }
+        // проверка пароля пользователя
+        if (($key === 'password') && !isUserPassCorrect($connect, $_POST['email'],  $value) && !empty($value)) {
+            $errors[$key] = $errorDescription['wrongPass'];
+        }
     }
 
     $errors = array_filter($errors);
 
     if (!count($errors) and isUserExist($connect, $form['email'])) {
         $user = getUserData($connect, $form['email']);
-        var_dump($user);
-        var_dump($form);
-        var_dump(password_verify($form['password'], $user['password']));
         if (password_verify($form['password'], $user['password'])) {
             $_SESSION['user'] = $user;
             header("Location: /index.php");

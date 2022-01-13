@@ -182,5 +182,16 @@ function getUserData(object $connect, string $userEmail): array
     mysqli_stmt_execute($stmt);
     $resultSql = mysqli_stmt_get_result($stmt);
     return mysqli_fetch_assoc($resultSql);
-    //return mysqli_fetch_all($resultSql, MYSQLI_ASSOC);
+}
+
+// проверка пароля пользователя
+function isUserPassCorrect(object $connect, string $userEmail, string $formPass): bool
+{
+    $query = "SELECT password FROM user WHERE email = ?";
+    $stmt = mysqli_prepare($connect, $query);
+    mysqli_stmt_bind_param($stmt, 's', $userEmail);
+    mysqli_stmt_execute($stmt);
+    $resultSql = mysqli_stmt_get_result($stmt);
+    $user = mysqli_fetch_assoc($resultSql);
+    return password_verify($formPass, $user['password']);
 }

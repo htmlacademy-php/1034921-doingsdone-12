@@ -15,7 +15,7 @@
     <div class="container container--with-sidebar">
 
         <header class="main-header">
-            <a href="#">
+            <a href="index.php">
                 <img src="../img/logo.png" width="153" height="42" alt="Логитип Дела в порядке">
             </a>
 
@@ -40,7 +40,7 @@
                         <?php $classname = isset($errors['email']) ? "form__input--error" : ""; ?>
                         <label class="form__label" for="email">E-mail <sup>*</sup></label>
 
-                        <input class="form__input form__input--error" type="text" name="email" id="email" value="" placeholder="Введите e-mail">
+                        <input class="form__input form__input--error" type="text" name="email" id="email" value="<?= getPostVal('email'); ?>" placeholder="Введите e-mail">
                         <p class="form__message"><?= $errors['email'] ?? "" ?></p>
                     </div>
 
@@ -48,7 +48,7 @@
                         <?php $classname = isset($errors['password']) ? "form__input--error" : ""; ?>
                         <label class="form__label" for="password">Пароль <sup>*</sup></label>
 
-                        <input class="form__input" type="password" name="password" id="password" value="" placeholder="Введите пароль">
+                        <input class="form__input" type="password" name="password" id="password" value="<?= getPostVal('password'); ?>" placeholder="Введите пароль">
                         <p class="form__message"><?= $errors['password'] ?? "" ?></p>
                     </div>
 
