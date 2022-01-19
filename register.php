@@ -2,12 +2,10 @@
 
 session_start();
 
+require_once 'db.php';
 require_once 'functions.php';
 require_once 'helpers.php';
 require_once 'data.php';
-
-$connect = mysqli_connect('localhost', 'root', '', 'doingsdone');
-mysqli_set_charset($connect, 'utf8');
 
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -61,8 +59,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // проверяем на наличие ошибок, если ошибок нет, то добавляем пользователя
     if (count($errors) === 0) {
         userInsert($connect, $newUser);
-        // передаем сессии email для последующей обработки в index, без этого index не откроется
-        $_SESSION['user']['email'] = $newUser['email'];
+        // передаем сессии id пользователя для последующей обработки в index, без этого index не откроется
+        $user = getUserData($connect, $newUser['email']);
+        $_SESSION['userId'] = $user['id'];
         header("Location: /index.php");
         exit();
     }

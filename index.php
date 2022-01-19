@@ -2,17 +2,15 @@
 
 session_start();
 
+require_once 'db.php';
 require_once 'data.php';
 require_once 'functions.php';
 require_once 'helpers.php';
 
-$connect = mysqli_connect('localhost', 'root', '', 'doingsdone');
-mysqli_set_charset($connect, 'utf8');
+if (isset($_SESSION['userId'])) {
 
-if (isset($_SESSION['user'])) {
-
-    $user = getUserData($connect, $_SESSION['user']['email']);
-    $userId = $user['id'];
+    $userId = $_SESSION['userId'];
+    $userName = getNameByUser($connect, $userId);
     $projects = getProjectsByUser($connect, $userId);
     $tasksAll = getTasksByUser($connect, $userId);
     $urlProjectId = filter_input(INPUT_GET, 'project_id', FILTER_SANITIZE_NUMBER_INT);
@@ -45,7 +43,7 @@ if (isset($_SESSION['user'])) {
         [
             'content' => $content,
             'title' => 'Дела в порядке',
-            'user' => $user
+            'userName' => $userName
         ]
     );
 

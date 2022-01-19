@@ -195,3 +195,16 @@ function isUserPassCorrect(object $connect, string $userEmail, string $formPass)
     $user = mysqli_fetch_assoc($resultSql);
     return password_verify($formPass, $user['password']);
 }
+
+// получение имени пользователя, для отображения в шаблоне
+function getNameByUser(object $connect, int $userId): string
+{
+    $query = "SELECT name FROM user WHERE id = ?";
+    $stmt = mysqli_prepare($connect, $query);
+    mysqli_stmt_bind_param($stmt, 'i', $userId);
+    mysqli_stmt_execute($stmt);
+    $resultSql = mysqli_stmt_get_result($stmt);
+    $user = mysqli_fetch_assoc($resultSql);
+    return $user['name'];
+}
+

@@ -9,11 +9,11 @@
     <link rel="stylesheet" href="css/flatpickr.min.css">
 </head>
 
-<body <?php if(empty($user)): ?>class="body-background"<?php endif; ?>>
+<body <?php if(empty($userName)): ?>class="body-background"<?php endif; ?>>
 <h1 class="visually-hidden">Дела в порядке</h1>
 
 <div class="page-wrapper">
-    <div class="container <?php if (empty($user)): ?>container--with-sidebar<?php endif; ?>">
+    <div class="container <?php if (!empty($userName)): ?>container--with-sidebar<?php endif; ?>">
         <header class="main-header">
             <a href="/">
                 <img src="img/logo.png" width="153" height="42" alt="Логотип Дела в порядке">
@@ -24,7 +24,7 @@
 
                 <div class="main-header__side-item user-menu">
                     <div class="user-menu__data">
-                        <p><?= htmlspecialchars($user['name']); ?></p>
+                        <p><?= htmlspecialchars($userName); ?></p>
 
                         <a href="logout.php">Выйти</a>
                     </div>

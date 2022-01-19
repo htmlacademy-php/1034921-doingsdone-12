@@ -1,12 +1,10 @@
 <?php
 session_start();
 
+require_once 'db.php';
 require_once 'functions.php';
 require_once 'helpers.php';
 require_once 'data.php';
-
-$connect = mysqli_connect('localhost', 'root', '', 'doingsdone');
-mysqli_set_charset($connect, 'utf8');
 
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -51,19 +49,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[$key] = $errorDescription['isEmailNotExist'];
         }
         // проверка пароля пользователя
-        if (($key === 'password') && !isUserPassCorrect($connect, $_POST['email'],  $value) && !empty($value)) {
+        if (($key === 'password') && !isUserPassCorrect($connect, $_POST['email'], $value) && !empty($value)) {
             $errors[$key] = $errorDescription['wrongPass'];
         }
     }
 
     $errors = array_filter($errors);
 
-    if (!count($errors) and isUserExist($connect, $form['email'])) {
+    if (count($errors) === 0 and isUserExist($connect, $form['email'])) {
         $user = getUserData($connect, $form['email']);
-        if (password_verify($form['password'], $user['password'])) {
-            $_SESSION['user'] = $user;
-            header("Location: /index.php");
-        }
+        $_SESSION['userId'] = $user['id'];
+        header("Location: /index.php");
     }
 
 }
