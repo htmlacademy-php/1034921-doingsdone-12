@@ -172,3 +172,39 @@ function userInsert(object $connect, array $form): void
         ]);
     mysqli_stmt_execute($stmt);
 }
+
+// возвращает все поля пользователя
+function getUserData(object $connect, string $userEmail): array
+{
+    $query = "SELECT * FROM user WHERE email = ?";
+    $stmt = mysqli_prepare($connect, $query);
+    mysqli_stmt_bind_param($stmt, 's', $userEmail);
+    mysqli_stmt_execute($stmt);
+    $resultSql = mysqli_stmt_get_result($stmt);
+    return mysqli_fetch_assoc($resultSql);
+}
+
+// проверка пароля пользователя
+function isUserPassCorrect(object $connect, string $userEmail, string $formPass): bool
+{
+    $query = "SELECT password FROM user WHERE email = ?";
+    $stmt = mysqli_prepare($connect, $query);
+    mysqli_stmt_bind_param($stmt, 's', $userEmail);
+    mysqli_stmt_execute($stmt);
+    $resultSql = mysqli_stmt_get_result($stmt);
+    $user = mysqli_fetch_assoc($resultSql);
+    return password_verify($formPass, $user['password']);
+}
+
+// получение имени пользователя, для отображения в шаблоне
+function getNameByUser(object $connect, int $userId): string
+{
+    $query = "SELECT name FROM user WHERE id = ?";
+    $stmt = mysqli_prepare($connect, $query);
+    mysqli_stmt_bind_param($stmt, 'i', $userId);
+    mysqli_stmt_execute($stmt);
+    $resultSql = mysqli_stmt_get_result($stmt);
+    $user = mysqli_fetch_assoc($resultSql);
+    return $user['name'];
+}
+
