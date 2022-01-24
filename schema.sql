@@ -10,7 +10,7 @@ CREATE TABLE user(
 CREATE INDEX email_idx ON user(email);
 CREATE TABLE project(
 	id INT AUTO_INCREMENT PRIMARY KEY,
-	user_id INT, 
+	user_id INT,
 	name CHAR(255) NOT NULL,
 	FOREIGN KEY (user_id) REFERENCES user(id)
 );
@@ -26,3 +26,4 @@ CREATE TABLE task(
 	FOREIGN KEY (project_id) REFERENCES project(id)
 );
 CREATE INDEX expiration ON task(expiration);
+CREATE FULLTEXT INDEX taskFullTextSearch ON task(name);

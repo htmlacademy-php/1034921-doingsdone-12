@@ -7,6 +7,9 @@ require_once 'data.php';
 require_once 'functions.php';
 require_once 'helpers.php';
 
+
+
+
 if (isset($_SESSION['userId'])) {
 
     $userId = $_SESSION['userId'];
@@ -26,6 +29,13 @@ if (isset($_SESSION['userId'])) {
         header("HTTP/1.1 404 Not Found");
         http_response_code(404);
         exit();
+    }
+
+    // возвращаем значение из поисковой строки
+    $searchText = trim(filter_input(INPUT_GET, 'query', FILTER_SANITIZE_STRING));
+    if ($searchText) {
+        // передача в шаблон нового списка задач по запросу
+        $tasks = getFromQuery($connect, $userId, $searchText);
     }
 
     $content = include_template('main.php',
