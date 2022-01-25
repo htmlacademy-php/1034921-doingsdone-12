@@ -19,8 +19,8 @@
 <main class="content__main">
     <h2 class="content__main-heading">Список задач</h2>
 
-    <form class="search-form" action="index.php" method="post" autocomplete="off">
-        <input class="search-form__input" type="text" name="" value="" placeholder="Поиск по задачам">
+    <form class="search-form" action="index.php" method="get" autocomplete="off">
+        <input class="search-form__input" type="text" name="query" value="<?= $_GET['query'] ?? ''?>" placeholder="Поиск по задачам">
 
         <input class="search-form__submit" type="submit" name="" value="Искать">
     </form>
@@ -41,6 +41,8 @@
     </div>
 
     <table class="tasks">
+        <!-- возвращаем ошибку при отсутствии задач -->
+        <?php if (empty($tasks)): ?><p>Ничего не найдено по вашему запросу</p><?php endif; ?>
         <?php foreach($tasks as $task) :
             if ($show_complete_tasks === 0 && $task['isDone']) :
                 continue;
