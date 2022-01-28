@@ -7,10 +7,13 @@ require_once 'functions.php';
 require_once 'helpers.php';
 require_once 'data.php';
 
+//var_dump($_SESSION['userId']);
+
 // проверяем сессию пользователя, если аутентифицирован, то продолжаем показ формы add_task
-if (isset($_SESSION['user'])) {
-    $user = getUserData($connect, $_SESSION['user']['email']);
-    $userId = $user['id'];
+if (isset($_SESSION['userId'])) {
+    //$user = getUserData($connect, $_SESSION['user']['email']);
+    $userId = $_SESSION['userId'];
+    $userName = getNameByUser($connect, $userId);
     $projects = getProjectsByUser($connect, $userId);
     $allowedPojects = array_column($projects, 'id');
     $tasksAll = getTasksByUser($connect, $userId);
@@ -113,7 +116,7 @@ $pageContent = include_template('add_task.php',
         'tasks' => $tasks,
         'errors' => $errors,
         'allowedPojects' => $allowedPojects, // для проверки существования проекта
-        'user' => $user
+        'userName' => $userName
     ]
 );
 

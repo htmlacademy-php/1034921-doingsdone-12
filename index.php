@@ -7,9 +7,6 @@ require_once 'data.php';
 require_once 'functions.php';
 require_once 'helpers.php';
 
-
-
-
 if (isset($_SESSION['userId'])) {
 
     $userId = $_SESSION['userId'];
@@ -17,6 +14,14 @@ if (isset($_SESSION['userId'])) {
     $projects = getProjectsByUser($connect, $userId);
     $tasksAll = getTasksByUser($connect, $userId);
     $urlProjectId = filter_input(INPUT_GET, 'project_id', FILTER_SANITIZE_NUMBER_INT);
+    // для JS который обрабатывает GET параметр
+    // $showCompletedTasks = 0;
+    $showCompletedTasks = isset($_GET['show_completed']) ? intval($_GET['show_completed']) : 0;
+    /*
+    if (isset($_GET['show_completed'])) {
+        $showCompletedTasks = intval($_GET['show_completed']);
+    }
+    */
 
     if (isset($urlProjectId)) {
         $projects = buildMenu($projects, $urlProjectId);
@@ -38,14 +43,42 @@ if (isset($_SESSION['userId'])) {
         $tasks = getFromQuery($connect, $userId, $searchText);
     }
 
+    // изменяем состояние задачи с выполнено на не выполнено, и обратно
+    if (isset($_GET['task_id'])) {
+        changeTaskState($connect, intval($_GET['task_id']));
+        header("Location: index.php");
+    }
+
+    // фильтруем задачи по - Все задачи, показывает все задачи в выбранном проекте
+    if (isset($_GET['tasks_all'])) {
+        $tasks = getTasksByProjectId($connect, $urlProjectId);
+    }
+
+    // фильтруем задачи по - Повестка дня, показывает все задачи на сегодня
+    if (isset($_GET['tasks_today'])) {
+        $tasks = getTasksByDay($connect, $userId, '0');
+    }
+
+    // фильтруем задачи по - Завтра, показывает все задачи на завтра
+    if (isset($_GET['tasks_tomorrow'])) {
+        $tasks = getTasksByDay($connect, $userId,'1');
+    }
+
+    // фильтруем задачи по - Просроченные, показывает все задачи, которые не были выполнены и у которых истёк срок
+    if (isset($_GET['tasks_expired'])) {
+        $tasks = getExpiredTasks($connect, $userId);
+    }
+
+
     $content = include_template('main.php',
         [
             'projects' => $projects,
             'tasksAll' => $tasksAll, // для расчета задач в меню
             'tasks' => $tasks,
-            'show_complete_tasks' => rand(0, 1),
+            //'show_complete_tasks' => rand(0, 1),
+            'show_complete_tasks' => $showCompletedTasks,
             'hoursBeforeTask' => 24,
-            'connect' => $connect,
+            'connect' => $connect
         ]
     );
 

@@ -24,7 +24,7 @@
 
         <div class="main-header__side-item user-menu">
           <div class="user-menu__data">
-              <p><?= htmlspecialchars($user['name']); ?></p>
+              <p><?= htmlspecialchars($userName); ?></p>
 
             <a href="logout.php">Выйти</a>
           </div>
@@ -46,7 +46,7 @@
               <?php endforeach; ?>
         </nav>
 
-        <a class="button button--transparent button--plus content__side-button" href="form-project.html">Добавить проект</a>
+        <a class="button button--transparent button--plus content__side-button" href="add_project.php">Добавить проект</a>
       </section>
 
       <main class="content__main">
