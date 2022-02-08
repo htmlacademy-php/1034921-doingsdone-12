@@ -6,15 +6,15 @@ require_once 'db.php';
 require_once 'functions.php';
 require_once 'helpers.php';
 
-$newUser = array();
 if (isset($_POST)) {
-    $newUser = filter_input_array(INPUT_POST,
-        [
-            'email' => FILTER_DEFAULT,
-            'password' => FILTER_DEFAULT,
-            'name' => FILTER_DEFAULT
-        ]);
+    $newUser = array();
 }
+$newUser = filter_input_array(INPUT_POST,
+    [
+        'email' => FILTER_DEFAULT,
+        'password' => FILTER_DEFAULT,
+        'name' => FILTER_DEFAULT
+    ]);
 
 $errorDescription = [
     'email' => 'Укажите E-mail',

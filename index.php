@@ -19,7 +19,7 @@ $tasksAll = getTasksByUser($connect, $userId);
 $urlProjectId = filter_input(INPUT_GET, 'project_id', FILTER_SANITIZE_NUMBER_INT);
 // для JS который обрабатывает GET параметр
 // $showCompletedTasks = 0;
-$showCompletedTasks = isset($_GET['show_completed']) ? intval($_GET['show_completed']) : 0;
+$showCompletedTasks = isset($_GET['show_completed']) ? (int)($_GET['show_completed']) : 0;
 
 if (isset($urlProjectId)) {
     $projects = buildMenu($projects, $urlProjectId);
@@ -43,7 +43,7 @@ if ($searchText) {
 
 // изменяем состояние задачи с выполнено на не выполнено, и обратно
 if (isset($_GET['task_id'])) {
-    changeTaskState($connect, intval($_GET['task_id']));
+    changeTaskState($connect, (int)($_GET['task_id']));
     header("Location: index.php");
 }
 

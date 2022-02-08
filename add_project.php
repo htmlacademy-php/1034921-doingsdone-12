@@ -6,19 +6,25 @@ require_once 'db.php';
 require_once 'functions.php';
 require_once 'helpers.php';
 
+// если пользователь не аутентифицирован переадресуем его на guest
+if (!isset($_SESSION['userId'])) {
+    header("Location: guest.php");
+    exit();
+}
+
 $userId = $_SESSION['userId'];
 $userName = getNameByUser($connect, $userId);
 $projects = getProjectsByUser($connect, $userId);
 $tasksAll = getTasksByUser($connect, $userId);
 $tasks = getTasksByUser($connect, $userId);
 
-$newProject = array();
-if (isset($_POST)) {
-    $newProject = filter_input_array(INPUT_POST,
-        [
-            'name' => FILTER_DEFAULT,
-        ]);
+if (!isset($_POST)) {
+    $newProject = array();
 }
+$newProject = filter_input_array(INPUT_POST,
+    [
+        'name' => FILTER_DEFAULT,
+    ]);
 
 $requiredFields = ['name'];
 
