@@ -5,108 +5,106 @@ session_start();
 require_once 'db.php';
 require_once 'functions.php';
 require_once 'helpers.php';
-require_once 'data.php';
 
-//var_dump($_SESSION['userId']);
+// если пользователь не аутентифицирован переадресуем его на guest
+if (!isset($_SESSION['userId'])) {
+    header("Location: guest.php");
+    exit();
+}
 
-// проверяем сессию пользователя, если аутентифицирован, то продолжаем показ формы add_task
-if (isset($_SESSION['userId'])) {
-    //$user = getUserData($connect, $_SESSION['user']['email']);
-    $userId = $_SESSION['userId'];
-    $userName = getNameByUser($connect, $userId);
-    $projects = getProjectsByUser($connect, $userId);
-    $allowedPojects = array_column($projects, 'id');
-    $tasksAll = getTasksByUser($connect, $userId);
-    $tasks = getTasksByUser($connect, $userId);
+$userId = $_SESSION['userId'];
+$userName = getNameByUser($connect, $userId);
+$projects = getProjectsByUser($connect, $userId);
+$allowedProjects = array_column($projects, 'id');
+$tasksAll = getTasksByUser($connect, $userId);
+$tasks = getTasksByUser($connect, $userId);
 
-// определяем пустой массив, который будем заполнять ошибками валидации для передачи в шаблон
-    $errors = [];
-// Вначале убедимся, что форма была отправлена.
-// Для этого проверяем метод, которым была запрошена страница.
-// Если метод POST - значит этот сценарий был вызван отправкой формы
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// Получим в массив поля из формы. Если какого то поля не будет в форме, то в массиве его значением будет NULL
+if (isset($_POST)) {
+    $newTask = array();
+}
+$newTask = filter_input_array(INPUT_POST,
+    [
+        'name' => FILTER_DEFAULT,
+        'project_id' => FILTER_DEFAULT,
+        'date' => FILTER_DEFAULT,
+        'file' => FILTER_DEFAULT
+    ]);
 
-        // Получим в массив поля из формы. Если какого то поля не будет в форме, то в массиве его значением будет NULL
-        $newTask = filter_input_array(INPUT_POST,
-            [
-                'name' => FILTER_DEFAULT,
-                'project_id' => FILTER_DEFAULT,
-                'date' => FILTER_DEFAULT,
-                'file' => FILTER_DEFAULT
-            ],
-            true);
+// описание ошибок
+$taskError = [
+    'name' => 'Поле наименование задачи надо заполнить',
+    'date' => 'Дата должна быть больше или равна текущей в формате ГГГГ-ММ-ДД',
+    'bigFile' => 'Загрузите документ не более 1 Мб в формате PDF или Word',
+    'loadFile' => 'Загрузите файл'
+];
 
-        // описание ошибок
-        $taskError = [
-            'name' => 'Поле наименование задачи надо заполнить',
-            'date' => 'Дата должна быть больше или равна текущей в формате ГГГГ-ММ-ДД',
-        ];
+// обязательные поля для заполнения
+$requiredFields = ['name', 'project_id', 'date'];
 
-        // обязательные поля для заполнения
-        $requiredFields = ['name', 'project_id', 'date'];
+// Применение функций проверки ко всем значениям
+$rules = [
+    'name' => function():string {
+        return  validateFilled($_POST['name']) ?? '';
+    },
+    'project_id' => function($value) use ($allowedProjects):string {
+        return validateProject($value, $allowedProjects) ?? '';
+    },
+    'date' => function():string {
+        return validateDate($_POST['date']) ?? '';
+    }
+];
 
-        // Применение функций проверки ко всем значениям
-        $rules = [
-            'name' => function() {
-                return  validateFilled($_POST['name']) ?? '';
-            },
-            'project_id' => function($value) use ($allowedPojects) {
-                return validateProject($value, $allowedPojects) ?? '';
-            },
-            'date' => function() {
-                validateDate('date') ?? '';
-            }
-        ];
+$errors = [];
 
-        // Применяем функции валидации ко всем полям формы.
-        // Результат работы функций записывается в массив ошибок $errors.
-        // Данный массив мы в итоге отфильтровываем,
-        // чтобы удалить от туда пустые значения и оставить только сообщения об ошибках.
-        // В этом же цикле мы проверяем заполненность обязательных к заполнению полей
-        foreach ($newTask as $key => $value) {
-            if (isset($rules[$key])) {
-                $rule = $rules[$key];
-                $errors[$key] = $rule($value);
-            }
-            if (in_array($key, $requiredFields) && empty($value)) {
-                $errors[$key] = $taskError[$key];
-            }
-            if (($key === 'date' && !isDateCorrect($value))) {
-                $errors[$key] = $taskError[$key];
-            }
+// Применяем функции валидации ко всем полям формы.
+// Результат работы функций записывается в массив ошибок $errors.
+// Данный массив мы в итоге отфильтровываем,
+// чтобы удалить от туда пустые значения и оставить только сообщения об ошибках.
+// В этом же цикле мы проверяем заполненность обязательных к заполнению полей
+if (!empty($_POST)) {
+    foreach ($newTask as $key => $value) {
+        if (isset($rules[$key])) {
+            $rule = $rules[$key];
+            $errors[$key] = $rule($value);
         }
-        $errors = array_filter($errors);
-
-        // добавляем файл
-        if (!empty($_FILES['file']) && (count($errors) === 0)) {
-            $file = $_FILES['file'];
-            if ($file['error'] === 0) {
-                // валидируем файл
-                if (validateFile($file)) {
-                    // возвращаем наименование файла для добавления в БД
-                    $newTask['file'] = $file['name'];
-                }
-                else {
-                    $errors['file'] = 'Загрузите документ не более 1 Мб в формате PDF или Word';
-                }
-            }
-            else {
-                $errors['file'] = 'Загрузите файл';
-            }
+        if (in_array($key, $requiredFields) && empty($value)) {
+            $errors[$key] = $taskError[$key];
         }
-
-        // проверяем на наличие ошибок, если ошибок нет, то добоавляем задачу
-        if (count($errors) === 0) {
-            // добавление задачи в БД
-            addNewTask($connect, $newTask);
-            // переадресация на главную страницу
-            header("Location: index.php");
+        if (($key === 'date' && !isDateCorrect($value))) {
+            $errors[$key] = $taskError[$key];
         }
     }
 }
-else {
-    // если пользователь не аутентицирован переадресуем его на guest
-    header("Location: guest.php");
+
+$errors = array_filter($errors);
+
+// добавляем файл
+$file = isset($_FILES['file']) ? $_FILES['file'] : array();
+if (isset($file['size']) && $file['size'] === 0) {
+    $errors['file'] = 'Загрузите файл';
+}
+// если нет наименования файла, и файл имеет размер более 0 кБ и он не прошел валидацию
+if (isset($file['name']) && $file['size'] > 0  && !validateFile($file)) {
+    $errors['file'] = 'Загрузите документ не более 1 Мб в формате PDF или Word';
+}
+// возвращаем наименование файла для добавления в БД
+if (!empty($file) && $file['size'] > 0) {
+    $newTask['file'] = $file['name'];
+}
+
+// проверяем на наличие ошибок, если ошибок нет, то добавляем задачу
+if (count($errors) === 0 && !empty($newTask)) {
+    // добавление задачи в БД
+    addNewTask($connect, $newTask);
+    // переадресация на главную страницу
+    header("Location: index.php");
+    exit();
+}
+
+if (!isset($_POST)) {
+    header("Location: index.php");
+    exit();
 }
 
 $pageContent = include_template('add_task.php',
@@ -115,7 +113,6 @@ $pageContent = include_template('add_task.php',
         'tasksAll' => $tasksAll, // для расчета задач в меню
         'tasks' => $tasks,
         'errors' => $errors,
-        'allowedPojects' => $allowedPojects, // для проверки существования проекта
         'userName' => $userName
     ]
 );

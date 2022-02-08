@@ -1,4 +1,8 @@
 <?php
+
+const HOUR_SECONDS = 3600; // для расчета часов при использовании timestamp
+const MIN_PASS_LENGTH = 6;
+
 function countTasks(array $tasks, string $projectName): int
 {
     $result = 0;
@@ -89,7 +93,7 @@ function validateProject(int $id, array $allowed_list): ?string
 function validateDate(string $date): ?string
 {
     if (!is_date_valid($date)) {
-            return 'Укажите в формате ГГГГ-ММ-ДД и ранее сегодняшнего дня';
+            return 'Укажите в формате ГГГГ-ММ-ДД и не ранее сегодняшнего дня';
         }
     return null;
 }
@@ -128,7 +132,7 @@ function validateFile(array $file): bool
 function validateEmail(string $email): ?string
 {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        return "E-mail введён некорректно";
+        return 'E-mail введён некорректно';
     }
     return null;
 }

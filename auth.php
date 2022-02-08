@@ -1,40 +1,41 @@
 <?php
+
 session_start();
 
 require_once 'db.php';
 require_once 'functions.php';
 require_once 'helpers.php';
-require_once 'data.php';
+
+if (!isset($_POST)) {
+    $authUser = array();
+}
+$authUser = filter_input_array(INPUT_POST,
+    [
+        'email' => FILTER_DEFAULT,
+        'password' => FILTER_DEFAULT,
+    ]);
+
+$errorDescription = [
+    'email' => 'Укажите E-mail',
+    'isEmailNotExist' => 'Пользователь с этим E-mail не найден',
+    'password' => 'Укажите пароль',
+    'wrongPass' => 'Неверный пароль'
+];
+
+$requiredFields = ['email', 'password'];
+
+$rules = [
+    'email' => function (): string {
+        return validateEmail($_POST['email']) ?? '';
+    },
+    'password' => function (): string {
+        return validatePass($_POST['password']) ?? '';
+    }
+];
 
 $errors = [];
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $form = $_POST;
 
-    $authUser = filter_input_array(INPUT_POST,
-        [
-            'email' => FILTER_DEFAULT,
-            'password' => FILTER_DEFAULT,
-        ],
-        true);
-
-    $errorDescription = [
-        'email' => 'Укажите E-mail',
-        'isEmailNotExist' => 'Пользователь с этим E-mail не найден',
-        'password' => 'Укажите пароль',
-        'wrongPass' => 'Неверный пароль'
-    ];
-
-    $requiredFields = ['email', 'password'];
-
-    $rules = [
-        'email' => function() {
-            return validateEmail($_POST['email']) ?? '';
-        },
-        'password' => function() {
-            return validatePass($_POST['password']) ?? '';
-        }
-    ];
-
+if (!empty($authUser)) {
     foreach ($authUser as $key => $value) {
         if (isset($rules[$key])) {
             $rule = $rules[$key];
@@ -45,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[$key] = $errorDescription[$key];
         }
         // проверка пользователя в БД
-        if (($key === 'email') && !isUserExist($connect, $value) && !empty($value) ) {
+        if (($key === 'email') && !isUserExist($connect, $value) && !empty($value)) {
             $errors[$key] = $errorDescription['isEmailNotExist'];
         }
         // проверка пароля пользователя
@@ -53,15 +54,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[$key] = $errorDescription['wrongPass'];
         }
     }
+}
 
-    $errors = array_filter($errors);
+$errors = array_filter($errors);
 
-    if (count($errors) === 0 and isUserExist($connect, $form['email'])) {
-        $user = getUserData($connect, $form['email']);
-        $_SESSION['userId'] = $user['id'];
-        header("Location: /index.php");
-    }
+// проверяем наличие ошибок и пользователя
+$isUserExist = isset($_POST['email']) ? isUserExist($connect, $_POST['email']) : false;
+if (count($errors) === 0 && $isUserExist) {
+    $user = getUserData($connect, $_POST['email']);
+    $_SESSION['userId'] = $user['id'];
+    header("Location: /index.php");
+}
 
+// если значение email и password ($form) не установлено, то переадресация на guest
+if (!isset($_POST)) {
+    header("Location: /guest.php");
+    exit();
 }
 
 $pageContent = include_template('auth.php',
