@@ -8,7 +8,7 @@ require_once 'helpers.php';
 
 // если пользователь не аутентифицирован переадресуем его на guest
 if (!isset($_SESSION['userId'])) {
-    header("Location: guest.php");
+    header('Location: guest.php');
     exit();
 }
 
@@ -18,8 +18,10 @@ $projects = getProjectsByUser($connect, $userId);
 $tasksAll = getTasksByUser($connect, $userId);
 $tasks = getTasksByUser($connect, $userId);
 
+// форма не отправлена, то переадресация на index
 if (!isset($_POST)) {
-    $newProject = array();
+    header('Location: index.php');
+    exit();
 }
 $newProject = filter_input_array(INPUT_POST,
     [
@@ -51,17 +53,13 @@ if (!empty($_POST)) {
         }
     }
 }
+
 $errors = array_filter($errors);
 
+// если ошибок нет, то добавляем проект
 if (count($errors) === 0 && !empty($newProject)) {
     addNewProject($connect, $newProject, $userId);
-    header("Location: index.php");
-}
-
-// если пользователь не аутентифицирован переадресуем его на guest
-if (!isset($_SESSION['userId'])) {
-    header("Location: guest.php");
-    exit();
+    header('Location: index.php');
 }
 
 $pageContent = include_template('add_project.php',

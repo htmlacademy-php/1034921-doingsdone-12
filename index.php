@@ -8,7 +8,7 @@ require_once 'helpers.php';
 
 // если пользователь не аутентифицирован переадресуем его на guest
 if (!isset($_SESSION['userId'])) {
-    header("Location: guest.php");
+    header('Location: guest.php');
     exit();
 }
 // иначе продолжаем
@@ -29,7 +29,7 @@ if (isset($urlProjectId)) {
 }
 
 if (isset($urlProjectId) && !in_array($urlProjectId, array_column($projects, 'id'))) {
-    header("HTTP/1.1 404 Not Found");
+    header('HTTP/1.1 404 Not Found');
     http_response_code(404);
     exit();
 }
@@ -44,7 +44,7 @@ if ($searchText) {
 // изменяем состояние задачи с выполнено на не выполнено, и обратно
 if (isset($_GET['task_id'])) {
     changeTaskState($connect, (int)($_GET['task_id']));
-    header("Location: index.php");
+    header('Location: index.php');
 }
 
 // фильтруем задачи по - Все задачи, показывает все задачи в выбранном проекте

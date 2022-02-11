@@ -29,7 +29,7 @@ function checkHours(int $hours, string $date): bool
 
 function getProjectsByUser(object $connect, int $userId): array
 {
-    $query = "SELECT id, name FROM project WHERE user_id = ?";
+    $query = 'SELECT id, name FROM project WHERE user_id = ?';
     $stmt = mysqli_prepare($connect, $query);
     mysqli_stmt_bind_param($stmt, 'i', $userId);
     mysqli_stmt_execute($stmt);
@@ -39,7 +39,7 @@ function getProjectsByUser(object $connect, int $userId): array
 
 function getTasksByUser(object $connect, int $userId): array
 {
-    $query = "SELECT t.id, t.name, t.state AS isDone, t.expiration AS date, p.name AS category, t.file_name FROM task as t INNER JOIN project as p ON p.user_id = ? INNER JOIN user as u ON u.id = ? WHERE t.project_id = p.id";
+    $query = 'SELECT t.id, t.name, t.state AS isDone, t.expiration AS date, p.name AS category, t.file_name FROM task as t INNER JOIN project as p ON p.user_id = ? INNER JOIN user as u ON u.id = ? WHERE t.project_id = p.id';
     $stmt = mysqli_prepare($connect, $query);
     mysqli_stmt_bind_param($stmt, 'ii', $userId, $userId);
     mysqli_stmt_execute($stmt);
@@ -49,7 +49,7 @@ function getTasksByUser(object $connect, int $userId): array
 
 function getTasksByProjectId(object $connect, int $projectId): array
 {
-    $query = "SELECT t.id, t.name, t.state as isDone, p.name as category, t.expiration as date, t.file_name from task as t inner JOIN project as p on p.id = t.project_id WHERE p.id = ?";
+    $query = 'SELECT t.id, t.name, t.state as isDone, p.name as category, t.expiration as date, t.file_name from task as t inner JOIN project as p on p.id = t.project_id WHERE p.id = ?';
     $stmt = mysqli_prepare($connect, $query);
     mysqli_stmt_bind_param($stmt, 'i', $projectId);
     mysqli_stmt_execute($stmt);
@@ -110,7 +110,7 @@ function isDateCorrect(string $date): bool
 // добавление новой задачи
 function addNewTask(object $connect, array $task): void
 {
-    $query = "INSERT INTO task (name, project_id, expiration, file_name) VALUES (?, ?, ?, ?)";
+    $query = 'INSERT INTO task (name, project_id, expiration, file_name) VALUES (?, ?, ?, ?)';
     $stmt = db_get_prepare_stmt($connect, $query, $task);
     mysqli_stmt_execute($stmt);
 }
@@ -124,7 +124,7 @@ function validateFile(array $file): bool
     $fileMaxSize = 1024000;
     $fileInfo = finfo_open(FILEINFO_MIME_TYPE);
     $fileType = finfo_file($fileInfo, $tmpFile);
-    $isFileAllow = in_array($fileType, ["application/pdf", "application/msword"]);
+    $isFileAllow = in_array($fileType, ['application/pdf', 'application/msword']);
     return $isFileAllow && $file['size'] <= $fileMaxSize ? move_uploaded_file($tmpFile, $filePath . $fileName) : false;
 }
 
@@ -155,7 +155,7 @@ function validatePass(string $pass): ?string
 // проверка пользователя в БД
 function isUserExist(object $connect, string $userEmail): bool
 {
-    $query = "SELECT id FROM user WHERE email = ?";
+    $query = 'SELECT id FROM user WHERE email = ?';
     $stmt = mysqli_prepare($connect, $query);
     mysqli_stmt_bind_param($stmt, 's', $userEmail);
     mysqli_stmt_execute($stmt);
@@ -167,7 +167,7 @@ function isUserExist(object $connect, string $userEmail): bool
 function userInsert(object $connect, array $form): void
 {
     $password = password_hash($form['password'], PASSWORD_DEFAULT);
-    $query = "INSERT INTO user (registration, email, name, password) VALUES (NOW(), ?, ?, ?)";
+    $query = 'INSERT INTO user (registration, email, name, password) VALUES (NOW(), ?, ?, ?)';
     $stmt = db_get_prepare_stmt($connect, $query,
         [
             $form['email'],
@@ -180,7 +180,7 @@ function userInsert(object $connect, array $form): void
 // возвращает все поля пользователя
 function getUserData(object $connect, string $userEmail): array
 {
-    $query = "SELECT * FROM user WHERE email = ?";
+    $query = 'SELECT * FROM user WHERE email = ?';
     $stmt = mysqli_prepare($connect, $query);
     mysqli_stmt_bind_param($stmt, 's', $userEmail);
     mysqli_stmt_execute($stmt);
@@ -191,7 +191,7 @@ function getUserData(object $connect, string $userEmail): array
 // проверка пароля пользователя
 function isUserPassCorrect(object $connect, string $userEmail, string $formPass): bool
 {
-    $query = "SELECT password FROM user WHERE email = ?";
+    $query = 'SELECT password FROM user WHERE email = ?';
     $stmt = mysqli_prepare($connect, $query);
     mysqli_stmt_bind_param($stmt, 's', $userEmail);
     mysqli_stmt_execute($stmt);
@@ -203,7 +203,7 @@ function isUserPassCorrect(object $connect, string $userEmail, string $formPass)
 // получение имени пользователя, для отображения в шаблоне
 function getNameByUser(object $connect, int $userId): string
 {
-    $query = "SELECT name FROM user WHERE id = ?";
+    $query = 'SELECT name FROM user WHERE id = ?';
     $stmt = mysqli_prepare($connect, $query);
     mysqli_stmt_bind_param($stmt, 'i', $userId);
     mysqli_stmt_execute($stmt);
@@ -215,7 +215,7 @@ function getNameByUser(object $connect, int $userId): string
 // получение задач при поиске
 function getFromQuery(object $connect, int $userId, string $queryText): array
 {
-    $query = "SELECT t.name, t.state AS isDone, t.expiration AS date, p.name AS category, t.file_name FROM task as t INNER JOIN project as p ON p.user_id = ? INNER JOIN user as u ON u.id = ? WHERE (t.project_id = p.id) AND (MATCH(t.name) AGAINST(?))";
+    $query = 'SELECT t.name, t.state AS isDone, t.expiration AS date, p.name AS category, t.file_name FROM task as t INNER JOIN project as p ON p.user_id = ? INNER JOIN user as u ON u.id = ? WHERE (t.project_id = p.id) AND (MATCH(t.name) AGAINST(?))';
     $stmt = mysqli_prepare($connect, $query);
     mysqli_stmt_bind_param($stmt, 'iis', $userId, $userId, $queryText);
     mysqli_stmt_execute($stmt);
@@ -226,7 +226,7 @@ function getFromQuery(object $connect, int $userId, string $queryText): array
 // добавление проекта
 function addNewProject(object $connect, array $form, int $userId): void
 {
-    $query = "INSERT INTO project (name, user_id) VALUES (?, ?)";
+    $query = 'INSERT INTO project (name, user_id) VALUES (?, ?)';
     $stmt = db_get_prepare_stmt($connect, $query);
     mysqli_stmt_bind_param($stmt, 'si', $form['name'], $userId);
     //$stmt = db_get_prepare_stmt($connect, $query, [ $project['name'], $userId ]);
@@ -236,7 +236,7 @@ function addNewProject(object $connect, array $form, int $userId): void
 // проверка проекта на дублирование
 function isProjectExist(object $connect, string $project, int $userId): bool
 {
-    $query = "SELECT id FROM project WHERE name = ? AND user_id = ?";
+    $query = 'SELECT id FROM project WHERE name = ? AND user_id = ?';
     $stmt = mysqli_prepare($connect, $query);
     mysqli_stmt_bind_param($stmt, 'si', $project, $userId);
     mysqli_stmt_execute($stmt);
@@ -247,7 +247,7 @@ function isProjectExist(object $connect, string $project, int $userId): bool
 // изменяет состояние задачи с выполнено -> не выполнено, и наоборот
 function changeTaskState(object $connect, int $taskId): void
 {
-    $query = "UPDATE task SET state = ABS(state - 1) WHERE id = ?";
+    $query = 'UPDATE task SET state = ABS(state - 1) WHERE id = ?';
     $stmt = db_get_prepare_stmt($connect, $query);
     mysqli_stmt_bind_param($stmt, 'i', $taskId);
     mysqli_stmt_execute($stmt);
@@ -256,7 +256,7 @@ function changeTaskState(object $connect, int $taskId): void
 // получение задач для фильтра - Повестка дня и Завтра
 function getTasksByDay(object $connect, int $userId, string $plusDays): array
 {
-    $query = "SELECT t.id, p.id AS project_id, t.name, t.state AS isDone, t.expiration AS date, p.name AS category, t.file_name FROM task as t INNER JOIN project AS p ON p.id = t.project_id WHERE p.user_id = ? AND t.expiration = DATE_ADD(CURDATE(), INTERVAL ? DAY)";
+    $query = 'SELECT t.id, p.id AS project_id, t.name, t.state AS isDone, t.expiration AS date, p.name AS category, t.file_name FROM task as t INNER JOIN project AS p ON p.id = t.project_id WHERE p.user_id = ? AND t.expiration = DATE_ADD(CURDATE(), INTERVAL ? DAY)';
     $stmt = mysqli_prepare($connect, $query);
     mysqli_stmt_bind_param($stmt, 'is',$userId,$plusDays);
     mysqli_stmt_execute($stmt);
@@ -267,7 +267,7 @@ function getTasksByDay(object $connect, int $userId, string $plusDays): array
 // получение задач для фильтра: Просроченные — показывает все задачи, которые не были выполнены и у которых истёк срок.
 function getExpiredTasks(object $connect, int $userId): array
 {
-    $query = "SELECT t.id, p.id AS project_id, t.name, t.state AS isDone, t.expiration AS date, p.name AS category, t.file_name FROM task as t INNER JOIN project AS p ON p.id = t.project_id WHERE p.user_id = ? AND t.state = 0 AND t.expiration < CURDATE()";
+    $query = 'SELECT t.id, p.id AS project_id, t.name, t.state AS isDone, t.expiration AS date, p.name AS category, t.file_name FROM task as t INNER JOIN project AS p ON p.id = t.project_id WHERE p.user_id = ? AND t.state = 0 AND t.expiration < CURDATE()';
     $stmt = mysqli_prepare($connect, $query);
     mysqli_stmt_bind_param($stmt, 'i',$userId);
     mysqli_stmt_execute($stmt);

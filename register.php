@@ -6,8 +6,9 @@ require_once 'db.php';
 require_once 'functions.php';
 require_once 'helpers.php';
 
-if (isset($_POST)) {
-    $newUser = array();
+if (!isset($_POST)) {
+    header('Location: guest.php');
+    exit();
 }
 $newUser = filter_input_array(INPUT_POST,
     [
@@ -65,7 +66,7 @@ if (count($errors) === 0 && !empty($_POST)) {
     // передаем сессии id пользователя для последующей обработки в index, без этого index не откроется
     $user = getUserData($connect, $newUser['email']);
     $_SESSION['userId'] = $user['id'];
-    header("Location: /index.php");
+    header('Location: /index.php');
     exit();
 }
 

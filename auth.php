@@ -7,7 +7,8 @@ require_once 'functions.php';
 require_once 'helpers.php';
 
 if (!isset($_POST)) {
-    $authUser = array();
+    header('Location: guest.php');
+    exit();
 }
 $authUser = filter_input_array(INPUT_POST,
     [
@@ -63,13 +64,7 @@ $isUserExist = isset($_POST['email']) ? isUserExist($connect, $_POST['email']) :
 if (count($errors) === 0 && $isUserExist) {
     $user = getUserData($connect, $_POST['email']);
     $_SESSION['userId'] = $user['id'];
-    header("Location: /index.php");
-}
-
-// если значение email и password ($form) не установлено, то переадресация на guest
-if (!isset($_POST)) {
-    header("Location: /guest.php");
-    exit();
+    header('Location: /index.php');
 }
 
 $pageContent = include_template('auth.php',

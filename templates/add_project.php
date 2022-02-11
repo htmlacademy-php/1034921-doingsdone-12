@@ -53,11 +53,11 @@
 
                 <form class="form"  action="add_project.php" method="post" autocomplete="off">
                     <div class="form__row">
-                        <?php $classname = isset($errors['name']) ? "form__input--error" : ""; ?>
+                        <?php $classname = isset($errors['name']) ? 'form__input--error' : ''; ?>
                         <label class="form__label" for="project_name">Название <sup>*</sup></label>
 
                         <input class="form__input" type="text" name="name" id="project_name" value="<?= htmlspecialchars(getPostVal('name')); ?>" placeholder="Введите название проекта">
-                        <p class="form__message"><?= $errors['name'] ?? ""; ?></p>
+                        <p class="form__message"><?= $errors['name'] ?? ''; ?></p>
                     </div>
 
                     <div class="form__row form__row--controls">
