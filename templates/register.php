@@ -14,7 +14,7 @@
 <div class="page-wrapper">
     <div class="container container--with-sidebar">
         <header class="main-header">
-            <a href="#">
+            <a href="index.php">
                 <img src="../img/logo.png" width="153" height="42" alt="Логитип Дела в порядке">
             </a>
 
@@ -35,27 +35,27 @@
 
                 <form class="form" action="register.php" method="post" autocomplete="off" enctype="multipart/form-data">
                     <div class="form__row">
-                        <?php $classname = isset($errors['email']) ? "form__input--error" : ""; ?>
+                        <?php $classname = isset($errors['email']) ? 'form__input--error' : ''; ?>
                         <label class="form__label" for="email">E-mail <sup>*</sup></label>
 
-                        <input class="form__input <?= $classname; ?>" type="text" name="email" id="email" value="<?php getPostVal('email'); ?>" placeholder="Введите e-mail">
-                        <p class="form__message"><?= $errors['email'] ?? "" ?></p>
+                        <input class="form__input <?= $classname; ?>" type="text" name="email" id="email" value="<?= getPostVal('email'); ?>" placeholder="Введите e-mail">
+                        <p class="form__message"><?= $errors['email'] ?? '' ?></p>
                     </div>
 
                     <div class="form__row">
-                        <?php $classname = isset($errors['password']) ? "form__input--error" : ""; ?>
+                        <?php $classname = isset($errors['password']) ? 'form__input--error' : ''; ?>
                         <label class="form__label" for="password">Пароль <sup>*</sup></label>
 
                         <input class="form__input <?= $classname; ?>" type="password" name="password" id="password" value="<?= getPostVal('password'); ?>" placeholder="Введите пароль">
-                        <p class="form__message"><?= $errors['password'] ?? "" ?></p>
+                        <p class="form__message"><?= $errors['password'] ?? '' ?></p>
                     </div>
 
                     <div class="form__row">
-                        <?php $classname = isset($errors['name']) ? "form__input--error" : ""; ?>
+                        <?php $classname = isset($errors['name']) ? 'form__input--error' : ''; ?>
                         <label class="form__label" for="name">Имя <sup>*</sup></label>
 
                         <input class="form__input <?= $classname; ?>" type="text" name="name" id="name" value="<?= getPostVal('name'); ?>" placeholder="Введите имя">
-                        <p class="form__message"><?= $errors['name'] ?? "" ?></p>
+                        <p class="form__message"><?= $errors['name'] ?? '' ?></p>
                     </div>
 
                     <div class="form__row form__row--controls">

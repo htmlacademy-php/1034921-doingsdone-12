@@ -24,7 +24,7 @@
 
         <div class="main-header__side-item user-menu">
           <div class="user-menu__data">
-              <p><?= htmlspecialchars($user['name']); ?></p>
+              <p><?= htmlspecialchars($userName); ?></p>
 
             <a href="logout.php">Выйти</a>
           </div>
@@ -46,7 +46,7 @@
               <?php endforeach; ?>
         </nav>
 
-        <a class="button button--transparent button--plus content__side-button" href="form-project.html">Добавить проект</a>
+        <a class="button button--transparent button--plus content__side-button" href="add_project.php">Добавить проект</a>
       </section>
 
       <main class="content__main">
@@ -54,41 +54,43 @@
 
         <form class="form" action="add.php" method="post" autocomplete="off" enctype="multipart/form-data">
           <div class="form__row">
-              <?php $classname = isset($errors['name']) ? "form__input--error" : ""; ?>
+              <?php $classname = isset($errors['name']) ? 'form__input--error' : ''; ?>
                 <label class="form__label" for="name">Название <sup>*</sup></label>
                 <input class="form__input <?= $classname; ?>" type="text" name="name" id="name" value="<?= htmlspecialchars(getPostVal('name')); ?>" placeholder="Введите название">
-              <p class="form__message"><?= $errors['name'] ?? ""; ?></p>
+              <p class="form__message"><?= $errors['name'] ?? ''; ?></p>
           </div>
 
           <div class="form__row">
             <label class="form__label" for="project">Проект <sup>*</sup></label>
 
             <select class="form__input form__input--select" name="project_id" id="project">
-              <?php foreach ($projects as $project): ?>
-                  <option value="<?= htmlspecialchars($project['id']) ?>"
-                    <?php if (isset($_POST['project_id']) && ($project['id'] === intval($_POST['project_id']))): ?>selected <?php endif; ?>>
+                <?php $classname = isset($errors['project_id']) ? 'form__input--error' : ''; ?>
+                <?php foreach ($selectProjects as $project): ?>
+                  <option value="<?= htmlspecialchars($project['id']); ?>"
+                    <?php if ($project['selected']): ?>selected<?php endif; ?>>
                     <?= htmlspecialchars($project['name']); ?>
                   </option>
-              <?php endforeach; ?>
+                <?php endforeach; ?>
+                <p class="form__message"><?= $errors['project_id'] ?? ''; ?></p>
             </select>
           </div>
 
           <div class="form__row">
-              <?php $classname = isset($errors['date']) ? "form__input--error" : ""; ?>
+              <?php $classname = isset($errors['date']) ? 'form__input--error' : ''; ?>
                 <label class="form__label" for="date">Дата выполнения</label>
                 <input class="form__input form__input--date <?= $classname; ?>" type="text" name="date" id="date" value="<?= htmlspecialchars(getPostVal('date')); ?>" placeholder="Введите дату в формате ГГГГ-ММ-ДД">
-              <p class="form__message"><?= $errors['date'] ?? ""; ?></p>
+              <p class="form__message"><?= $errors['date'] ?? ''; ?></p>
           </div>
 
           <div class="form__row">
             <label class="form__label" for="file">Файл</label>
             <div class="form__input-file">
-                <?php $classname = isset($errors['file']) ? "form__input--error" : ""; ?>
+                <?php $classname = isset($errors['file']) ? 'form__input--error' : ''; ?>
               <input class="visually-hidden" type="file" name="file" id="file" value="<?= getPostVal('file'); ?>">
               <label class="button button--transparent" for="file">
                 <span>Выберите файл</span>
               </label>
-                <p class="form__message"><?= $errors['file'] ?? ""; ?></p>
+                <p class="form__message"><?= $errors['file'] ?? ''; ?></p>
             </div>
           </div>
 

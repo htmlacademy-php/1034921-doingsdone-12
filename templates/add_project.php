@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Авторизация</title>
+    <title>Добавление проекта</title>
     <link rel="stylesheet" href="../css/normalize.css">
     <link rel="stylesheet" href="../css/style.css">
 </head>
@@ -13,54 +13,59 @@
 
 <div class="page-wrapper">
     <div class="container container--with-sidebar">
-
         <header class="main-header">
             <a href="index.php">
                 <img src="../img/logo.png" width="153" height="42" alt="Логитип Дела в порядке">
             </a>
 
             <div class="main-header__side">
-                <a class="main-header__side-item button button--transparent" href="auth.php">Войти</a>
+                <a class="main-header__side-item button button--plus" href="add.php">Добавить задачу</a>
+
+                <div class="main-header__side-item user-menu">
+                    <div class="user-menu__data">
+                        <p><?= htmlspecialchars($userName); ?></p>
+
+                        <a href="logout.php">Выйти</a>
+                    </div>
+                </div>
             </div>
         </header>
 
         <div class="content">
-
             <section class="content__side">
-                <p class="content__side-info">Если у вас уже есть аккаунт, авторизуйтесь на сайте</p>
+                <h2 class="content__side-heading">Проекты</h2>
 
-                <a class="button button--transparent content__side-button" href="auth.php">Войти</a>
+                <nav class="main-navigation">
+                    <ul class="main-navigation__list">
+                        <?php foreach($projects as $project) : ?>
+                            <li class="main-navigation__list-item <?php if ($project['selected']): ?>main-navigation__list-item--active<?php endif; ?>">
+                                <a class="main-navigation__list-item-link" href="?project_id=<?= $project['id'] ?>"><?= htmlspecialchars($project['name']); ?></a>
+                                <span class="main-navigation__list-item-count"><?= htmlspecialchars(countTasks($tasksAll, $project['name'])); ?></span>
+                            </li>
+                        <?php endforeach; ?>
+                </nav>
+
+                <a class="button button--transparent button--plus content__side-button" href="add_project.php">Добавить проект</a>
             </section>
 
             <main class="content__main">
-                <h2 class="content__main-heading">Вход на сайт</h2>
+                <h2 class="content__main-heading">Добавление проекта</h2>
 
-                <form class="form" action="auth.php" method="post" autocomplete="off">
+                <form class="form"  action="add_project.php" method="post" autocomplete="off">
                     <div class="form__row">
-                        <?php $classname = isset($errors['email']) ? 'form__input--error' : ''; ?>
-                        <label class="form__label" for="email">E-mail <sup>*</sup></label>
+                        <?php $classname = isset($errors['name']) ? 'form__input--error' : ''; ?>
+                        <label class="form__label" for="project_name">Название <sup>*</sup></label>
 
-                        <input class="form__input <?= $classname; ?>" type="text" name="email" id="email" value="<?= getPostVal('email'); ?>" placeholder="Введите e-mail">
-                        <p class="form__message"><?= $errors['email'] ?? '' ?></p>
-                    </div>
-
-                    <div class="form__row">
-                        <?php $classname = isset($errors['password']) ? 'form__input--error' : ''; ?>
-                        <label class="form__label" for="password">Пароль <sup>*</sup></label>
-
-                        <input class="form__input" type="password" name="password" id="password" value="<?= getPostVal('password'); ?>" placeholder="Введите пароль">
-                        <p class="form__message"><?= $errors['password'] ?? '' ?></p>
+                        <input class="form__input" type="text" name="name" id="project_name" value="<?= htmlspecialchars(getPostVal('name')); ?>" placeholder="Введите название проекта">
+                        <p class="form__message"><?= $errors['name'] ?? ''; ?></p>
                     </div>
 
                     <div class="form__row form__row--controls">
-                        <input class="button" type="submit" name="" value="Войти">
+                        <input class="button" type="submit" name="" value="Добавить">
                     </div>
                 </form>
-
             </main>
-
         </div>
-
     </div>
 </div>
 
@@ -71,6 +76,8 @@
 
             <p>Веб-приложение для удобного ведения списка дел.</p>
         </div>
+
+        <a class="main-footer__button button button--plus" href="form-task.html">Добавить задачу</a>
 
         <div class="main-footer__social social">
             <span class="visually-hidden">Мы в соцсетях:</span>
@@ -120,6 +127,5 @@
         </div>
     </div>
 </footer>
-
 </body>
 </html>
