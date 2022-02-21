@@ -278,7 +278,7 @@ function getExpiredTasks(object $connect, int $userId): array
 // получение задач у которых срок равен текущему дню
 function getAllExpiredTasksByToday(object $connect): array
 {
-    $query = 'SELECT u.email, t.name, t.expiration AS deadline FROM task AS t INNER JOIN project AS p ON p.id = t.project_id INNER JOIN user AS u ON u.id = p.user_id WHERE t.state = 0 AND t.expiration = CURDATE()';
+    $query = 'SELECT u.email, t.name FROM task AS t INNER JOIN project AS p ON p.id = t.project_id INNER JOIN user AS u ON u.id = p.user_id WHERE t.state = 0 AND t.expiration = CURDATE()';
     $stmt = mysqli_prepare($connect, $query);
     mysqli_stmt_execute($stmt);
     $resultSql = mysqli_stmt_get_result($stmt);
