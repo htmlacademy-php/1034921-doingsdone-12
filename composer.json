@@ -1,0 +1,20 @@
+{
+    "name": "sabmile/doingsdone",
+    "description": "app for convenient to-do list management",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Sabmile\\Doingsdone\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Azamat Sultanov",
+            "email": "sab288@yandex.ru"
+        }
+    ],
+    "require": {
+        "symfony/mailer": "^5.4"
+    }
+}
