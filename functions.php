@@ -3,6 +3,12 @@
 const HOUR_SECONDS = 3600; // для расчета часов при использовании timestamp
 const MIN_PASS_LENGTH = 6;
 
+/**
+ * Расчет количества задач
+ * @param string $projectName Проект
+ * @param array $tasks Задачи
+ * @return int количество задач
+ */
 function countTasks(array $tasks, string $projectName): int
 {
     $result = 0;
@@ -18,7 +24,12 @@ function countTasks(array $tasks, string $projectName): int
 # функция возвращает истину если разница текущего времени и датой задания
 # меньше аргумента hours, по условию задания параметр hours = 24 часа
 # переменная hoursBeforeTask = 24 в index передает аргумент функции в main
-
+/**
+ * Проверка текущего времени и даты задачи
+ * @param int $hours Количество часов до даты задачи
+ * @param string $date Дата задач
+ * @return bool true
+ */
 function checkHours(int $hours, string $date): bool
 {
     $now = time();
@@ -27,6 +38,12 @@ function checkHours(int $hours, string $date): bool
     return ($diff > 0) && (($diff / HOUR_SECONDS) <= $hours);
 }
 
+/**
+ * Возвращает проекты по id пользователя
+ * @param object $connect Параметры БД
+ * @param int $userId id пользователя
+ * @return array Проекты
+ */
 function getProjectsByUser(object $connect, int $userId): array
 {
     $query = 'SELECT id, name FROM project WHERE user_id = ?';
@@ -37,6 +54,12 @@ function getProjectsByUser(object $connect, int $userId): array
     return mysqli_fetch_all($resultSql, MYSQLI_ASSOC);
 }
 
+/**
+ * Возвращает задачи по id пользователя
+ * @param object $connect Параметры БД
+ * @param int $userId id пользователя
+ * @return array Задачи
+ */
 function getTasksByUser(object $connect, int $userId): array
 {
     $query = 'SELECT t.id, t.name, t.state AS isDone, t.expiration AS date, p.name AS category, t.file_name FROM task as t INNER JOIN project as p ON p.user_id = ? INNER JOIN user as u ON u.id = ? WHERE t.project_id = p.id';
@@ -47,6 +70,12 @@ function getTasksByUser(object $connect, int $userId): array
     return mysqli_fetch_all($resultSql, MYSQLI_ASSOC);
 }
 
+/**
+ * Возвращает задачи по id проекта
+ * @param object $connect Параметры БД
+ * @param int $projectId id проекта
+ * @return array Задачи
+ */
 function getTasksByProjectId(object $connect, int $projectId): array
 {
     $query = 'SELECT t.id, t.name, t.state as isDone, p.name as category, t.expiration as date, t.file_name from task as t inner JOIN project as p on p.id = t.project_id WHERE p.id = ?';
@@ -57,6 +86,12 @@ function getTasksByProjectId(object $connect, int $projectId): array
     return mysqli_fetch_all($resultSql, MYSQLI_ASSOC);
 }
 
+/**
+ * Возвращает задачи по id проекта
+ * @param object $connect Соединение с БД
+ * @param int $projectId id проекта
+ * @return array Задачи
+ */
 function buildMenu(array $projects, int $requestedProjectId): array
 {
     foreach ($projects as $key => $project) {
@@ -65,13 +100,21 @@ function buildMenu(array $projects, int $requestedProjectId): array
     return $projects;
 }
 
-// возвращает значение поля для value в шаблоне
+/**
+ * Возвращает значение поля из формы
+ * @param string $field Строка
+ * @return null|string Строка
+ */
 function getPostVal(string $field): ?string
 {
     return filter_input(INPUT_POST, $field);
 }
 
-// валидация заполненности поля Наименование задачи
+/**
+ * Валидация заполненности поля из формы
+ * @param string $field Строка
+ * @return null|string Строка
+ */
 function validateFilled(string $field): ?string
 {
     if (empty($field)) {
@@ -80,25 +123,39 @@ function validateFilled(string $field): ?string
     return null;
 }
 
-// валидация проекта
-function validateProject(int $id, array $allowed_list): ?string
+/**
+ * Валидация существования проекта
+ * @param int $id id проекта
+ * @param array $allowedList Индексный массив
+ * @return null|string Строка
+ */
+function validateProject(int $id, array $allowedList): ?string
 {
-    if (!in_array($id, $allowed_list)) {
+    if (!in_array($id, $allowedList)) {
         return 'Указан несуществующий проект';
     }
     return null;
 }
 
-// валидация даты
+/**
+ * Валидация формата заполнения даты
+ * @param string $date Строка
+ * @return null|string Строка
+ */
 function validateDate(string $date): ?string
 {
+
     if (!is_date_valid($date)) {
             return 'Укажите в формате ГГГГ-ММ-ДД и не ранее сегодняшнего дня';
         }
     return null;
 }
 
-// проверка даты, должна быть больше или равна текущей дате
+/**
+ * Проверка даты, должна быть больше или равна текущей дате
+ * @param string $date Строка
+ * @return bool true/false
+ */
 function isDateCorrect(string $date): bool
 {
     $now = time();
@@ -107,7 +164,12 @@ function isDateCorrect(string $date): bool
     return $diff >= -1;
 }
 
-// добавление новой задачи
+/**
+ * Добавление новой задачи
+ * @param object $connect Соединение с БД
+ * @param array $task Задача
+ * @return void Добавление задачи
+ */
 function addNewTask(object $connect, array $task): void
 {
     $query = 'INSERT INTO task (name, project_id, expiration, file_name) VALUES (?, ?, ?, ?)';
@@ -115,7 +177,11 @@ function addNewTask(object $connect, array $task): void
     mysqli_stmt_execute($stmt);
 }
 
-// валидация вложенного файла
+/**
+ * Валидация вложенного файла
+ * @param array $file
+ * @return bool true/false
+ */
 function validateFile(array $file): bool
 {
     $fileName = $file['name'];
@@ -128,7 +194,11 @@ function validateFile(array $file): bool
     return $isFileAllow && $file['size'] <= $fileMaxSize ? move_uploaded_file($tmpFile, $filePath . $fileName) : false;
 }
 
-// валидация email
+/**
+ * Валидация email
+ * @param string $email
+ * @return null|string null|Строка
+ */
 function validateEmail(string $email): ?string
 {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -137,7 +207,11 @@ function validateEmail(string $email): ?string
     return null;
 }
 
-// валидация пароля
+/**
+ * Валидация пароля
+ * @param string $pass
+ * @return null|string null|Строка
+ */
 function validatePass(string $pass): ?string
 {
     if (strlen($pass) < MIN_PASS_LENGTH) {
@@ -152,7 +226,12 @@ function validatePass(string $pass): ?string
     return null;
 }
 
-// проверка пользователя в БД
+/**
+ * Добавление новой задачи
+ * @param object $connect Соединение с БД
+ * @param string $userEmail email
+ * @return bool true/false
+ */
 function isUserExist(object $connect, string $userEmail): bool
 {
     $query = 'SELECT id FROM user WHERE email = ?';
@@ -163,7 +242,12 @@ function isUserExist(object $connect, string $userEmail): bool
     return mysqli_fetch_assoc($resultSql) ? true : false;
 }
 
-// добавление пользователя в БД
+/**
+ * Добавление пользователя в БД
+ * @param object $connect Соединение с БД
+ * @param array $form Массив
+ * @return void Добавление
+ */
 function userInsert(object $connect, array $form): void
 {
     $password = password_hash($form['password'], PASSWORD_DEFAULT);
@@ -177,7 +261,12 @@ function userInsert(object $connect, array $form): void
     mysqli_stmt_execute($stmt);
 }
 
-// возвращает все поля пользователя
+/**
+ * Возвращает все поля пользователя
+ * @param object $connect Соединение с БД
+ * @param string $userEmail email
+ * @return array Массив
+ */
 function getUserData(object $connect, string $userEmail): array
 {
     $query = 'SELECT * FROM user WHERE email = ?';
@@ -188,7 +277,13 @@ function getUserData(object $connect, string $userEmail): array
     return mysqli_fetch_assoc($resultSql);
 }
 
-// проверка пароля пользователя
+/**
+ * Проверка пароля пользователя
+ * @param object $connect Соединение с БД
+ * @param string $userEmail email
+ * @param string $formPass пароль
+ * @return array Массив
+ */
 function isUserPassCorrect(object $connect, string $userEmail, string $formPass): bool
 {
     $query = 'SELECT password FROM user WHERE email = ?';
@@ -200,7 +295,12 @@ function isUserPassCorrect(object $connect, string $userEmail, string $formPass)
     return password_verify($formPass, $user['password']);
 }
 
-// получение имени пользователя, для отображения в шаблоне
+/**
+ * Возвращает имя пользователя
+ * @param object $connect Соединение с БД
+ * @param int $userId id пользователя
+ * @return string Строка
+ */
 function getNameByUser(object $connect, int $userId): string
 {
     $query = 'SELECT name FROM user WHERE id = ?';
@@ -212,7 +312,13 @@ function getNameByUser(object $connect, int $userId): string
     return $user['name'];
 }
 
-// получение задач при поиске
+/**
+ * Возвращает задачи при поиске
+ * @param object $connect Соединение с БД
+ * @param int $userId id пользователя
+ * @param string $queryText Запрашиваемая строка
+ * @return string Строка
+ */
 function getFromQuery(object $connect, int $userId, string $queryText): array
 {
     $query = 'SELECT t.name, t.state AS isDone, t.expiration AS date, p.name AS category, t.file_name FROM task as t INNER JOIN project as p ON p.user_id = ? INNER JOIN user as u ON u.id = ? WHERE (t.project_id = p.id) AND (MATCH(t.name) AGAINST(?))';
@@ -223,7 +329,13 @@ function getFromQuery(object $connect, int $userId, string $queryText): array
     return mysqli_fetch_all($resultSql, MYSQLI_ASSOC);
 }
 
-// добавление проекта
+/**
+ * Добавление проекта
+ * @param object $connect Соединение с БД
+ * @param array $form Форма
+ * @param int $userId id пользователя
+ * @return string Строка
+ */
 function addNewProject(object $connect, array $form, int $userId): void
 {
     $query = 'INSERT INTO project (name, user_id) VALUES (?, ?)';
@@ -233,7 +345,13 @@ function addNewProject(object $connect, array $form, int $userId): void
     mysqli_stmt_execute($stmt);
 }
 
-// проверка проекта на дублирование
+/**
+ * Проверка проекта на дублирование
+ * @param object $connect Соединение с БД
+ * @param string $project Проект
+ * @param int $userId id пользователя
+ * @return string Строка
+ */
 function isProjectExist(object $connect, string $project, int $userId): bool
 {
     $query = 'SELECT id FROM project WHERE name = ? AND user_id = ?';
@@ -244,7 +362,12 @@ function isProjectExist(object $connect, string $project, int $userId): bool
     return mysqli_fetch_assoc($resultSql) ? true : false;
 }
 
-// изменяет состояние задачи с выполнено -> не выполнено, и наоборот
+/**
+ * Изменяет состояние задачи с выполнено -> не выполнено, и наоборот
+ * @param object $connect Соединение с БД
+ * @param int $taskId id задачи
+ * @return void Изменение
+ */
 function changeTaskState(object $connect, int $taskId): void
 {
     $query = 'UPDATE task SET state = ABS(state - 1) WHERE id = ?';
@@ -253,7 +376,13 @@ function changeTaskState(object $connect, int $taskId): void
     mysqli_stmt_execute($stmt);
 }
 
-// получение задач для фильтра - Повестка дня и Завтра
+/**
+ * Возвращает задачи для фильтра - Повестка дня и Завтра
+ * @param object $connect Соединение с БД
+ * @param int $userId id пользователя
+ * @param string $plusDays Количество дней
+ * @return array Задачи
+ */
 function getTasksByDay(object $connect, int $userId, string $plusDays): array
 {
     $query = 'SELECT t.id, p.id AS project_id, t.name, t.state AS isDone, t.expiration AS date, p.name AS category, t.file_name FROM task as t INNER JOIN project AS p ON p.id = t.project_id WHERE p.user_id = ? AND t.expiration = DATE_ADD(CURDATE(), INTERVAL ? DAY)';
@@ -264,7 +393,12 @@ function getTasksByDay(object $connect, int $userId, string $plusDays): array
     return mysqli_fetch_all($resultSql, MYSQLI_ASSOC);
 }
 
-// получение задач для фильтра: Просроченные — показывает все задачи, которые не были выполнены и у которых истёк срок.
+/**
+ * Возвращает задачи для фильтра: Просроченные — показывает все задачи, которые не были выполнены и у которых истёк срок
+ * @param object $connect Соединение с БД
+ * @param int $userId id пользователя
+ * @return array Задачи
+ */
 function getExpiredTasks(object $connect, int $userId): array
 {
     $query = 'SELECT t.id, p.id AS project_id, t.name, t.state AS isDone, t.expiration AS date, p.name AS category, t.file_name FROM task as t INNER JOIN project AS p ON p.id = t.project_id WHERE p.user_id = ? AND t.state = 0 AND t.expiration < CURDATE()';
@@ -275,7 +409,11 @@ function getExpiredTasks(object $connect, int $userId): array
     return mysqli_fetch_all($resultSql, MYSQLI_ASSOC);
 }
 
-// получение задач у которых срок равен текущему дню
+/**
+ * Возвращает задачи у которых срок равен текущему дню
+ * @param object $connect Соединение с БД
+ * @return array Задачи
+ */
 function getAllExpiredTasksByToday(object $connect): array
 {
     $query = 'SELECT u.email, t.name FROM task AS t INNER JOIN project AS p ON p.id = t.project_id INNER JOIN user AS u ON u.id = p.user_id WHERE t.state = 0 AND t.expiration = CURDATE()';

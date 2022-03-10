@@ -3,15 +3,15 @@ USE doingsdone;
 CREATE TABLE user(
 	id INT AUTO_INCREMENT PRIMARY KEY,
 	registration TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	email VARCHAR(128) NOT NULL UNIQUE,
-	name CHAR(255) NOT NULL,
-	password CHAR(64)
+	email VARCHAR(255) NOT NULL UNIQUE,
+	name VARCHAR(255) NOT NULL,
+	password VARCHAR(255)
 );
 CREATE INDEX email_idx ON user(email);
 CREATE TABLE project(
 	id INT AUTO_INCREMENT PRIMARY KEY,
 	user_id INT,
-	name CHAR(255) NOT NULL,
+	name VARCHAR(255) NOT NULL,
 	FOREIGN KEY (user_id) REFERENCES user(id)
 );
 CREATE INDEX name ON project(name);
@@ -20,8 +20,8 @@ CREATE TABLE task(
 	project_id INT,
 	create_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	state TINYINT(1) NOT NULL DEFAULT 0,
-	name CHAR(255) NOT NULL,
-	file_name VARCHAR(256) DEFAULT NULL,
+	name VARCHAR(255) NOT NULL,
+	file_name VARCHAR(255) DEFAULT NULL,
 	expiration DATE,
 	FOREIGN KEY (project_id) REFERENCES project(id)
 );
