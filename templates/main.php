@@ -27,7 +27,7 @@
 
     <div class="tasks-controls">
         <nav class="tasks-switch">
-            <a href="?project_id=<?= $_GET['project_id'] ?>&tasks_all=true" class="tasks-switch__item <?php if(isset($_GET['tasks_all'])): ?>tasks-switch__item--active<?php endif; ?>">Все задачи</a>
+            <a href="?project_id=<?= $_GET['project_id'] ?? $projects[0]['id']; ?>&tasks_all=true" class="tasks-switch__item <?php if(isset($_GET['tasks_all'])): ?>tasks-switch__item--active<?php endif; ?>">Все задачи</a>
             <a href="?tasks_today=true" class="tasks-switch__item <?php if(isset($_GET['tasks_today'])): ?>tasks-switch__item--active<?php endif; ?>">Повестка дня</a>
             <a href="?tasks_tomorrow=true" class="tasks-switch__item <?php if(isset($_GET['tasks_tomorrow'])): ?>tasks-switch__item--active<?php endif; ?>">Завтра</a>
             <a href="?tasks_expired=true" class="tasks-switch__item <?php if(isset($_GET['tasks_expired'])): ?>tasks-switch__item--active<?php endif; ?>">Просроченные</a>
