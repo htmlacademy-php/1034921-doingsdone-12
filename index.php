@@ -21,7 +21,13 @@ $urlProjectId = filter_input(INPUT_GET, 'project_id', FILTER_SANITIZE_NUMBER_INT
 // $showCompletedTasks = 0;
 $showCompletedTasks = isset($_GET['show_completed']) ? (int)($_GET['show_completed']) : 0;
 
-if (isset($urlProjectId)) {
+// если проекта/ов нет, то отправляем на страницу добавления проекта
+if (empty($projects)) {
+    header('Location: add_project.php');
+    exit();
+}
+
+if (!empty($urlProjectId)) {
     $projects = buildMenu($projects, $urlProjectId);
     $tasks = getTasksByProjectId($connect, $urlProjectId);
 } else {

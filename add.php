@@ -19,10 +19,9 @@ $allowedProjects = array_column($projects, 'id');
 $tasksAll = getTasksByUser($connect, $userId);
 $tasks = getTasksByUser($connect, $userId);
 
-// если проекта/ов нет, выдаем 404 ошибку
+// если проекта/ов нет, то отправляем на страницу добавления проекта
 if (empty($projects)) {
-    header("HTTP/1.1 404 Not Found");
-    http_response_code(404);
+    header('Location: add_project.php');
     exit();
 }
 
